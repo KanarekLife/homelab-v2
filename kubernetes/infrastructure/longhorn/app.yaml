@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: longhorn
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: infrastructure
+  sources:
+    - chart: longhorn
+      repoURL: https://charts.longhorn.io/
+      targetRevision: v1.10.0
+      helm:
+        releaseName: longhorn
+        valueFiles:
+          - $repo/kubernetes/infrastructure/longhorn/meta/values.yaml
+    - repoURL: https://github.com/KanarekLife/homelab-v2
+      targetRevision: HEAD
+      ref: repo
+  destination:
+    name: in-cluster
+    namespace: longhorn-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    managedNamespaceMetadata:
+      labels:
+        pod-security.kubernetes.io/enforce: privileged
+    syncOptions:
+      - CreateNamespace=true

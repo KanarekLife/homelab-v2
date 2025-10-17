@@ -8,7 +8,7 @@ The homelab is built using 3 x [SOYO Mini PC M4 N150 12GB RAM](https://aliexpres
 
 ## Setup
 
-1. Generate [Talos Linux Image ISO](https://talos.dev/) using [Talos Linux Image Factory](https://factory.talos.dev/). Make sure to select `siderolabs/i915` and `siderolabs/intel-ucode` as system extensions.
+1. Generate [Talos Linux Image ISO](https://talos.dev/) using [Talos Linux Image Factory](https://factory.talos.dev/). Make sure to select `siderolabs/i915`, `siderolabs/intel-ucode`, `siderolabs/iscsi-tools` as system extensions.
 
 2. Boot each node from the generated ISO and note the IPs:
 

@@ -13,15 +13,13 @@ spec:
     - https://github.com/alex1989hu/kubelet-serving-cert-approver
     - https://charts.jetstack.io
     - https://github.com/kubernetes-sigs/gateway-api.git
-    - https://openebs.github.io/openebs
     - https://charts.external-secrets.io
-    - https://nvidia.github.io/k8s-device-plugin
-    - https://vmware-tanzu.github.io/helm-charts
     - https://charts.goauthentik.io
     - https://cloudnative-pg.github.io/charts
     - https://intel.github.io/helm-charts
     - https://kubernetes-sigs.github.io/node-feature-discovery/charts
     - https://github.com/intel/intel-device-plugins-for-kubernetes
+    - https://charts.longhorn.io/
   destinations:
     - namespace: "*"
       name: in-cluster
