@@ -1,0 +1,104 @@
+global:
+  domain: argocd.nieradko.com
+
+server:
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+  resources:
+    requests:
+      cpu: 10m
+      memory: 100Mi
+
+controller:
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+  resources:
+    requests:
+      cpu: 75m
+      memory: 500Mi
+
+dex:
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+  resources:
+    requests:
+      cpu: 10m
+      memory: 100Mi
+  livenessProbe:
+    enabled: true
+  startupProbe:
+    enabled: true
+
+repoServer:
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+  resources:
+    requests:
+      cpu: 20m
+      memory: 200Mi
+
+notifications:
+  enabled: true
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+  resources:
+    requests:
+      cpu: 10m
+      memory: 50Mi
+
+applicationSet:
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+  resources:
+    requests:
+      cpu: 10m
+      memory: 50Mi
+
+redis:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 30Mi
+
+configs:
+  params:
+    server.insecure: true
+  cm:
+    dex.config: |
+      connectors:
+        - config:
+            issuer: https://login.nieradko.com/application/o/argocd/
+            clientID: $argocd-dex-secret:authentik-clientid
+            clientSecret: $argocd-dex-secret:authentik-clientsecret
+            insecureEnableGroups: true
+            scopes:
+              - openid
+              - profile
+              - email
+          name: authentik
+          type: oidc
+          id: authentik
+  rbac:
+    policy.default: role:user
+    policy.csv: |
+      p, role:user, applications, get, *, allow
+      p, role:user, applications, sync, *, allow
+      p, role:user, applicationsets, get, *, allow
+      p, role:user, clusters, get, *, allow
+      p, role:user, repositories, get, *, allow
+      p, role:user, logs, get, *, allow
+      g, admin, role:admin
+      g, ArgoCD Admins, role:admin
+      g, ArgoCD Viewers, role:user
