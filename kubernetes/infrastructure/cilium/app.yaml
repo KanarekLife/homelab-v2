@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cilium
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: infrastructure
+  sources:
+    - repoURL: https://helm.cilium.io/
+      chart: cilium
+      targetRevision: 1.18.2
+      helm:
+        releaseName: cilium
+        valueFiles:
+          - $repo/kubernetes/infrastructure/cilium/meta/values.yaml
+    - repoURL: https://github.com/kubernetes-sigs/gateway-api.git
+      targetRevision: v1.3.0
+      path: config/crd/standard
+    - repoURL: https://github.com/KanarekLife/homelab-v2
+      targetRevision: HEAD
+      ref: repo
+    - repoURL: https://github.com/KanarekLife/homelab-v2
+      targetRevision: HEAD
+      path: kubernetes/infrastructure/cilium/manifests
+  destination:
+    name: in-cluster
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

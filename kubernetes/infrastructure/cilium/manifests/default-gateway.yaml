@@ -1,0 +1,27 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: default-gateway
+  namespace: kube-system
+  # annotations:
+  #   cert-manager.io/cluster-issuer: cloudflare-prod-clusterissuer
+spec:
+  gatewayClassName: cilium
+  listeners:
+    - name: http
+      protocol: HTTP
+      allowedRoutes:
+        namespaces:
+          from: All
+      port: 80
+    # - name: https
+    #   hostname: "*.nieradko.com"
+    #   protocol: HTTPS
+    #   allowedRoutes:
+    #     namespaces:
+    #       from: All
+    #   port: 443
+    #   tls:
+    #     mode: Terminate
+    #     certificateRefs:
+    #       - name: wildcard-homelab-cert-tls
