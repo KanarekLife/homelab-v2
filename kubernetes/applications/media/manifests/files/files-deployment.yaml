@@ -20,7 +20,6 @@ spec:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
-        fsGroupChangePolicy: Always
       containers:
         - name: files
           image: ghcr.io/gtsteffaniak/filebrowser:0.8.7-beta
