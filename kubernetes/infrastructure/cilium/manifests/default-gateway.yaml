@@ -3,8 +3,8 @@ kind: Gateway
 metadata:
   name: default-gateway
   namespace: kube-system
-  # annotations:
-  #   cert-manager.io/cluster-issuer: cloudflare-prod-clusterissuer
+  annotations:
+    cert-manager.io/cluster-issuer: cloudflare-prod-clusterissuer
 spec:
   gatewayClassName: cilium
   listeners:
@@ -14,14 +14,14 @@ spec:
         namespaces:
           from: All
       port: 80
-    # - name: https
-    #   hostname: "*.nieradko.com"
-    #   protocol: HTTPS
-    #   allowedRoutes:
-    #     namespaces:
-    #       from: All
-    #   port: 443
-    #   tls:
-    #     mode: Terminate
-    #     certificateRefs:
-    #       - name: wildcard-homelab-cert-tls
+    - name: https
+      hostname: "*.nieradko.com"
+      protocol: HTTPS
+      allowedRoutes:
+        namespaces:
+          from: All
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: wildcard-homelab-cert-tls
