@@ -110,6 +110,8 @@ helm install \
 kubectl delete -n kube-system daemonsets/kube-flannel
 kubectl delete -n kube-system daemonsets/kube-proxy
 
+# HERE Remove annotations from nodes
+
 # Reboot each node to apply Cilium CNI
 talosctl reboot -n 10.0.0.13 --wait
 talosctl reboot -n 10.0.0.14 --wait
