@@ -53,6 +53,12 @@ talosctl get disks --insecure --nodes <node-ip-address>
 vim controlplane.yaml
 # Open controlplane.yaml and set the correct disk for installation `        disk: /dev/sdb # The disk used for installations.`
 # Open controlplane.yaml and uncomment `    allowSchedulingOnControlPlanes: true`
+# Open controlplane.yaml and set:
+
+# machine:
+#   kubelet:
+#     extraArgs:
+#       rotate-server-certificates: true
 
 for ip in "${CONTROL_PLANE_IP[@]}"; do
   echo "=== Applying configuration to node $ip ==="

@@ -1,0 +1,28 @@
+kind: Application
+apiVersion: argoproj.io/v1alpha1
+metadata:
+  name: intel-gpu
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: infrastructure
+  sources:
+    - repoURL: https://github.com/KanarekLife/homelab-v2
+      targetRevision: HEAD
+      ref: repo
+    - repoURL: https://intel.github.io/helm-charts
+      chart: intel-device-plugins-operator
+      targetRevision: 0.34.0
+      helm:
+        releaseName: intel-gpu
+    - repoURL: https://github.com/intel/intel-device-plugins-for-kubernetes
+      targetRevision: HEAD
+      path: deployments/gpu_plugin
+  destination:
+    name: in-cluster
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
