@@ -118,3 +118,9 @@ helm repo update
 helm install argocd argo/argo-cd -f kubernetes/infrastructure/argocd/meta/values.yaml --create-namespace --namespace argocd --atomic
 kubectl apply -f kubernetes/root.yaml
 ```
+
+7. Configure Bitwarden Secrets Manager bootstrap secret:
+
+```bash
+kubectl create secret -n default generic bitwarden-access-token --from-literal=token=<TOKEN>
+```

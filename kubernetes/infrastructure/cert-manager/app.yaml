@@ -1,33 +1,32 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: external-secrets-operator
+  name: cert-manager
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: infrastructure
   sources:
-    - repoURL: https://charts.external-secrets.io
-      chart: external-secrets
-      targetRevision: 0.20.3
+    - repoURL: https://charts.jetstack.io
+      chart: cert-manager
+      targetRevision: 1.19.1
       helm:
-        releaseName: external-secrets
+        releaseName: cert-manager
         valueFiles:
-          - $repo/kubernetes/infrastructure/external-secrets/meta/values.yaml
+          - $repo/kubernetes/infrastructure/cert-manager/meta/values.yaml
     - repoURL: https://github.com/KanarekLife/homelab-v2
       targetRevision: HEAD
       ref: repo
     - repoURL: https://github.com/KanarekLife/homelab-v2
       targetRevision: HEAD
-      path: kubernetes/infrastructure/external-secrets/manifests
+      path: kubernetes/infrastructure/cert-manager/manifests
   destination:
     name: in-cluster
-    namespace: external-secrets
+    namespace: cert-manager
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - ServerSideApply=true
