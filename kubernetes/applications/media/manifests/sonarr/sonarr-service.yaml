@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: sonarr-service
+  namespace: media
+spec:
+  selector:
+    app: sonarr
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 8989
+      targetPort: 8989

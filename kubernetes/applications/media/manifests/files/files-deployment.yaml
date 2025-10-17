@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: files-deployment
+  namespace: media
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: files
+  template:
+    metadata:
+      labels:
+        app: files
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: files
+          image: ghcr.io/gtsteffaniak/filebrowser:0.8.7-beta
+          env:
+            - name: TZ
+              value: "Europe/Warsaw"
+            - name: FILEBROWSER_DATABASE
+              value: "/config/filebrowser.db"
+            - name: FILEBROWSER_CONFIG
+              value: "/config.yaml"
+            - name: FILEBROWSER_OIDC_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: files-secret
+                  key: authentik-clientid
+            - name: FILEBROWSER_OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: files-secret
+                  key: authentik-clientsecret
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: media
+              mountPath: /sources/media
+            - name: downloads
+              mountPath: /sources/downloads
+            - name: configmap
+              mountPath: /config.yaml
+              subPath: config.yaml
+            - name: prowlarr-config
+              mountPath: /sources/prowlarr-config
+            - name: qbittorrent-config
+              mountPath: /sources/qbittorrent-config
+            - name: sonarr-config
+              mountPath: /sources/sonarr-config
+            - name: radarr-config
+              mountPath: /sources/radarr-config
+          ports:
+            - containerPort: 80
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: files-config-pvc
+        - name: configmap
+          configMap:
+            name: files-configmap
+        - name: media
+          persistentVolumeClaim:
+            claimName: media-pvc
+        - name: downloads
+          persistentVolumeClaim:
+            claimName: downloads-pvc
+        - name: prowlarr-config
+          persistentVolumeClaim:
+            claimName: prowlarr-config-pvc
+        - name: qbittorrent-config
+          persistentVolumeClaim:
+            claimName: qbittorrent-config-pvc
+        - name: sonarr-config
+          persistentVolumeClaim:
+            claimName: sonarr-config-pvc
+        - name: radarr-config
+          persistentVolumeClaim:
+            claimName: radarr-config-pvc

@@ -1,0 +1,33 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: files-configmap
+  namespace: media
+data:
+  config.yaml: |
+    server:
+      sources:
+        - path: /sources/media
+          name: Media
+        - path: /sources/downloads
+          name: Downloads
+        - path: /sources/prowlarr-config
+          name: Prowlarr Config
+        - path: /sources/qbittorrent-config
+          name: qBittorrent Config
+        - path: /sources/sonarr-config
+          name: Sonarr Config
+        - path: /sources/radarr-config
+          name: Radarr Config
+    auth:
+      methods:
+        password:
+          enabled: false
+        oidc:
+          enabled: true
+          issuerUrl: https://login.nieradko.com/application/o/files/
+          scopes: "email openid profile groups"
+          userIdentifier: "preferred_username"
+          createUser: true
+          adminGroup: "Files Admins"
+          groupsClaim: "groups"

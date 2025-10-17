@@ -1,28 +1,27 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: root
+  name: media
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  project: default
+  project: applications
   sources:
     - repoURL: https://github.com/KanarekLife/homelab-v2
       targetRevision: HEAD
-      path: kubernetes/projects
-    - repoURL: https://github.com/KanarekLife/homelab-v2
-      targetRevision: HEAD
-      path: kubernetes/infrastructure
-    - repoURL: https://github.com/KanarekLife/homelab-v2
-      targetRevision: HEAD
-      path: kubernetes/applications
+      path: kubernetes/applications/media/manifests
+      directory:
+        recurse: true
   destination:
     name: in-cluster
-    namespace: argocd
+    namespace: media
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+    managedNamespaceMetadata:
+      labels:
+        pod-security.kubernetes.io/enforce: privileged
     syncOptions:
       - CreateNamespace=true

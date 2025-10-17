@@ -1,19 +1,19 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: longhorn-httproute
-  namespace: authentik
+  name: files-httproute
+  namespace: media
 spec:
   parentRefs:
     - name: default-gateway
       namespace: kube-system
   hostnames:
-    - longhorn.nieradko.com
+    - files.nieradko.com
   rules:
     - matches:
         - path:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: ak-outpost-default
-          port: 9000
+        - name: files-service
+          port: 80
