@@ -18,7 +18,7 @@ spec:
     - repoURL: https://github.com/KanarekLife/homelab-v2
       targetRevision: HEAD
       ref: repo
-    - repoURL: https://github.com/KanarekLife/homelab-v2c
+    - repoURL: https://github.com/KanarekLife/homelab-v2
       targetRevision: HEAD
       path: kubernetes/infrastructure/argocd/manifests
   destination:

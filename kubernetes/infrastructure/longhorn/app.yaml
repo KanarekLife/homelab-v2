@@ -18,6 +18,9 @@ spec:
     - repoURL: https://github.com/KanarekLife/homelab-v2
       targetRevision: HEAD
       ref: repo
+    - repoURL: https://github.com/KanarekLife/homelab-v2
+      targetRevision: HEAD
+      path: kubernetes/infrastructure/longhorn/manifests
   destination:
     name: in-cluster
     namespace: longhorn-system
