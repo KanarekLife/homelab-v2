@@ -1,0 +1,82 @@
+authentik:
+  error_reporting:
+    enabled: false
+
+  postgresql:
+    host: authentik-pg-cluster-rw
+    name: authentik
+    user: authentik
+
+  email:
+    host: smtp.purelymail.com
+    port: 465
+    username: sso@nieradko.com
+    use_ssl: true
+    from: "HomeLab SSO <sso@nieradko.com>"
+
+server:
+  env:
+    - name: AUTHENTIK_POSTGRESQL__USERNAME
+      valueFrom:
+        secretKeyRef:
+          name: authentik-secret
+          key: pg-username
+    - name: AUTHENTIK_POSTGRESQL__PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: authentik-secret
+          key: pg-password
+    - name: AUTHENTIK_SECRET_KEY
+      valueFrom:
+        secretKeyRef:
+          name: authentik-secret
+          key: secret-key
+    - name: AUTHENTIK_EMAIL__PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: authentik-secret
+          key: email-password
+  route:
+    main:
+      enabled: true
+      hostnames:
+        - login.nieradko.com
+      parentRefs:
+        - name: default-gateway
+          namespace: kube-system
+
+worker:
+  env:
+    - name: AUTHENTIK_POSTGRESQL__USERNAME
+      valueFrom:
+        secretKeyRef:
+          name: authentik-secret
+          key: pg-username
+    - name: AUTHENTIK_POSTGRESQL__PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: authentik-secret
+          key: pg-password
+    - name: AUTHENTIK_SECRET_KEY
+      valueFrom:
+        secretKeyRef:
+          name: authentik-secret
+          key: secret-key
+    - name: AUTHENTIK_EMAIL__PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: authentik-secret
+          key: email-password
+
+redis:
+  enabled: true
+  master:
+    kind: Deployment
+
+    persistence:
+      enabled: false
+
+    resources:
+      requests:
+        memory: 30Mi
+        cpu: 25m
