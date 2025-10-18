@@ -1,0 +1,15 @@
+cluster:
+  apiServer:
+    extraArgs:
+      feature-gates: EnvFiles=true
+  controllerManager:
+    extraArgs:
+      feature-gates: EnvFiles=true
+  scheduler:
+    extraArgs:
+      feature-gates: EnvFiles=true
+
+machine:
+  kubelet:
+    extraArgs:
+      feature-gates: EnvFiles=true

@@ -60,19 +60,44 @@ spec:
               value: "off"
             - name: FIREWALL_INPUT_PORTS
               value: "8080"
+            - name: VPN_PORT_FORWARDING
+              value: "on"
+            - name: VPN_PORT_FORWARDING_PROVIDER
+              value: "private internet access"
+            - name: VPN_PORT_FORWARDING_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: pia-vpn-secret
+                  key: username
+            - name: VPN_PORT_FORWARDING_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pia-vpn-secret
+                  key: password
+            - name: SERVER_NAMES
+              valueFrom:
+                fileKeyRef:
+                  key: SERVER_NAME
+                  path: wg0.conf.servername
+                  volumeName: wgconfig
+                  optional: false
           volumeMounts:
             - mountPath: /gluetun/wireguard/
               name: wgconfig
               readOnly: true
+            - mountPath: /tmp/gluetun/forwarded_port
+              name: portforwardingstatusfile
       initContainers:
         - name: generate-wg-config
-          image: ghcr.io/kanareklife/pia-wg-config:v1
+          image: ghcr.io/kanareklife/pia-wg-config:v1.2.0
           args:
             [
               "-r",
               "$(PIA_REGION)",
               "-o",
               "/out/wg0.conf",
+              "--servername-file",
+              "/out/wg0.conf.servername",
               "$(PIA_USERNAME)",
               "$(PIA_PASSWORD)",
             ]
@@ -88,7 +113,7 @@ spec:
                   name: pia-vpn-secret
                   key: password
             - name: PIA_REGION
-              value: "nl_amsterdam"
+              value: "fi"
           volumeMounts:
             - mountPath: /out
               name: wgconfig
@@ -100,6 +125,8 @@ spec:
           persistentVolumeClaim:
             claimName: downloads-pvc
         - name: wgconfig
+          emptyDir: {}
+        - name: portforwardingstatusfile
           emptyDir: {}
         - name: run
           emptyDir: {}
