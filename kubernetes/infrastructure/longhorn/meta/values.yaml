@@ -1,2 +1,6 @@
+defaultSettings:
+  storageMinimalAvailablePercentage: "15"
+  storageReservedPercentageForDefaultDisk: "15"
+
 persistence:
   reclaimPolicy: Retain
