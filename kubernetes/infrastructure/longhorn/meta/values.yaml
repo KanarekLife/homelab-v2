@@ -4,3 +4,8 @@ defaultSettings:
 
 persistence:
   reclaimPolicy: Retain
+
+defaultBackupStore:
+  backupTarget: s3://homelab-nieradko-com-backup@eu-central-003/
+  backupTargetCredentialSecret: longhorn-b2-backup-secret
+  pollInterval: 360
