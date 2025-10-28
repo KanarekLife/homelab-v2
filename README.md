@@ -132,3 +132,19 @@ kubectl apply -f kubernetes/root.yaml
 ```bash
 kubectl create secret -n default generic bitwarden-access-token --from-literal=token=<TOKEN>
 ```
+
+## Removing Node
+
+```bash
+$ talosctl -n <node-ip-address> reset
+$ kubectl delete node <node-name>
+```
+
+## Adding Node
+
+```bash
+talosctl get mc -o yaml | yq .spec > controlplane.yaml
+talosctl apply-config --insecure \
+    --nodes [NODE IP] \
+    --file controlplane.yaml
+```
