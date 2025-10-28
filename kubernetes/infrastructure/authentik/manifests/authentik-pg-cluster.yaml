@@ -6,6 +6,7 @@ metadata:
     argocd.argoproj.io/sync-options: Delete=false
 spec:
   instances: 1
+
   primaryUpdateStrategy: unsupervised
 
   storage:
@@ -24,4 +25,4 @@ spec:
         name: authentik-pg-secret
 
   monitoring:
-    enablePodMonitor: true
+    enablePodMonitor: false
