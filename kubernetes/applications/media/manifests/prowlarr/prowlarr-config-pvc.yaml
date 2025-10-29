@@ -5,6 +5,9 @@ metadata:
   namespace: media
   annotations:
     argocd.argoproj.io/sync-options: Delete=false
+  labels:
+    recurring-job-group.longhorn.io/backup: enabled
+    recurring-job.longhorn.io/source: enabled
 spec:
   accessModes:
     - ReadWriteMany
