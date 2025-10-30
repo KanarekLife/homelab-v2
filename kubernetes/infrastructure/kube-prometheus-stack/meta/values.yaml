@@ -1,0 +1,67 @@
+grafana:
+  persistence:
+    enabled: true
+    size: 1Gi
+    accessModes: ["ReadWriteOnce"]
+  deploymentStrategy:
+    type: Recreate
+  sidecar:
+    datasources:
+      skipReload: true
+      initDatasources: true
+      exemplarTraceIdDestinations:
+        datasourceUid: tempo
+        traceIdLabelName: traceID
+  grafana.ini:
+    server:
+      root_url: https://grafana.nieradko.com
+  resources:
+    requests:
+      cpu: 20m
+      memory: 300Mi
+    limits:
+      memory: 600Mi
+
+prometheus:
+  prometheusSpec:
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
+    retention: 7d
+    retentionSize: 8.5GiB
+    ruleSelectorNilUsesHelmValues: false
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    probeSelectorNilUsesHelmValues: false
+    enableRemoteWriteReceiver: true
+    additionalArgs:
+      - name: enable-feature
+        value: native-histograms
+    maximumStartupDurationSeconds: 300
+    resources:
+      requests:
+        cpu: 150m
+        memory: 1Gi
+      limits:
+        cpu: 500m
+        memory: 2Gi
+
+kube-state-metrics:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 125Mi
+    limits:
+      memory: 250Mi
+
+prometheus-node-exporter:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 30Mi
+    limits:
+      memory: 60Mi
