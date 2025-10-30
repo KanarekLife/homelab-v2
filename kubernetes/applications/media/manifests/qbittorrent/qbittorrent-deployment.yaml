@@ -49,7 +49,9 @@ spec:
             timeoutSeconds: 3
             exec:
               command:
-                - nslookup github.com || kill 1
+                - sh
+                - -c
+                - nslookup google.com || kill 1
         - name: vpn
           image: qmcgaw/gluetun:v3.40.0
           securityContext:
