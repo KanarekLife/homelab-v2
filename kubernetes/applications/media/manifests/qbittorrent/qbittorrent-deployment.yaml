@@ -43,6 +43,13 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             readOnlyRootFilesystem: true
+          livenessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            exec:
+              command:
+                - nslookup github.com || kill 1
         - name: vpn
           image: qmcgaw/gluetun:v3.40.0
           securityContext:
