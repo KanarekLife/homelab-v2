@@ -10,7 +10,7 @@ metadata:
     recurring-job.longhorn.io/source: enabled
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 5Gi

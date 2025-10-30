@@ -50,14 +50,6 @@ spec:
             - name: configmap
               mountPath: /config.yaml
               subPath: config.yaml
-            - name: prowlarr-config
-              mountPath: /sources/prowlarr-config
-            - name: qbittorrent-config
-              mountPath: /sources/qbittorrent-config
-            - name: sonarr-config
-              mountPath: /sources/sonarr-config
-            - name: radarr-config
-              mountPath: /sources/radarr-config
           ports:
             - containerPort: 80
           securityContext:
@@ -79,15 +71,3 @@ spec:
         - name: downloads
           persistentVolumeClaim:
             claimName: downloads-pvc
-        - name: prowlarr-config
-          persistentVolumeClaim:
-            claimName: prowlarr-config-pvc
-        - name: qbittorrent-config
-          persistentVolumeClaim:
-            claimName: qbittorrent-config-pvc
-        - name: sonarr-config
-          persistentVolumeClaim:
-            claimName: sonarr-config-pvc
-        - name: radarr-config
-          persistentVolumeClaim:
-            claimName: radarr-config-pvc

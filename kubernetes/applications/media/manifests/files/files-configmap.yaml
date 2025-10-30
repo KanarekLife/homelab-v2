@@ -11,14 +11,6 @@ data:
           name: Media
         - path: /sources/downloads
           name: Downloads
-        - path: /sources/prowlarr-config
-          name: Prowlarr Config
-        - path: /sources/qbittorrent-config
-          name: qBittorrent Config
-        - path: /sources/sonarr-config
-          name: Sonarr Config
-        - path: /sources/radarr-config
-          name: Radarr Config
     auth:
       methods:
         password:
