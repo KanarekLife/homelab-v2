@@ -22,7 +22,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: radarr
-          image: linuxserver/radarr:5.27.5
+          image: linuxserver/radarr:5.28.0
           volumeMounts:
             - name: config
               mountPath: /config
