@@ -1,0 +1,25 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "timezone": "Europe/Warsaw",
+  "commitMessagePrefix": "chore:",
+  "semanticCommits": "enabled",
+  "dependencyDashboard": true,
+  "kubernetes": {
+    "managerFilePatterns": [
+      "/kubernetes/.+\\.ya?ml$/"
+    ]
+  },
+  "argocd": {
+    "managerFilePatterns": [
+      "/kubernetes/.+\\.ya?ml$/"
+    ]
+  },
+  "helm-values": {
+    "fileMatch": [
+      "/kubernetes/.+\\.ya?ml$/"
+    ]
+  }
+}
