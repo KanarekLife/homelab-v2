@@ -1,14 +1,14 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: qbittorrent-service
+  name: downloads-service
   namespace: media
 spec:
   selector:
-    app: qbittorrent
+    app: downloads
   type: ClusterIP
   ports:
-    - name: qb-web-ui
+    - name: web-ui
       protocol: TCP
-      port: 8080
-      targetPort: qb-web-ui
+      port: 9091
+      targetPort: web-ui

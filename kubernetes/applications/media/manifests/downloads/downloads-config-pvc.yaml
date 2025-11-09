@@ -1,7 +1,7 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: qbittorrent-config-pvc
+  name: downloads-config-pvc
   namespace: media
   annotations:
     argocd.argoproj.io/sync-options: Delete=false

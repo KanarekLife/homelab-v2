@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: qbittorrent-deployment
+  name: downloads-deployment
   namespace: media
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: qbittorrent
+      app: downloads
   template:
     metadata:
       labels:
-        app: qbittorrent
+        app: downloads
     spec:
       containers:
-        - name: qbittorrent
-          image: linuxserver/qbittorrent:5.1.2
+        - name: downloads
+          image: linuxserver/transmission:4.0.6
           volumeMounts:
             - name: config
               mountPath: /config
@@ -30,11 +30,16 @@ spec:
               value: "1000"
             - name: TZ
               value: Europe/Warsaw
-            - name: WEBUI_PORT
-              value: "8080"
+            - name: PEERPORT
+              valueFrom:
+                fileKeyRef:
+                  key: PORTS
+                  path: forwarded_port.env
+                  volumeName: vpn-stats
+                  optional: false
           ports:
-            - name: qb-web-ui
-              containerPort: 8080
+            - name: web-ui
+              containerPort: 9091
               protocol: TCP
           securityContext:
             runAsNonRoot: true
@@ -43,15 +48,6 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             readOnlyRootFilesystem: true
-          livenessProbe:
-            initialDelaySeconds: 10
-            periodSeconds: 5
-            timeoutSeconds: 3
-            exec:
-              command:
-                - sh
-                - -c
-                - nslookup google.com || kill 1
         - name: vpn
           image: qmcgaw/gluetun:v3.40.0
           securityContext:
@@ -68,7 +64,7 @@ spec:
             - name: DOT
               value: "off"
             - name: FIREWALL_INPUT_PORTS
-              value: "8080"
+              value: "9091"
             - name: VPN_PORT_FORWARDING
               value: "on"
             - name: VPN_PORT_FORWARDING_PROVIDER
@@ -90,12 +86,14 @@ spec:
                   path: wg0.conf.servername
                   volumeName: wgconfig
                   optional: false
+            - name: VPN_PORT_FORWARDING_UP_COMMAND
+              value: '/bin/sh -c "echo PORTS={{PORTS}} > /tmp/gluetun/forwarded_port.env"'
           volumeMounts:
             - mountPath: /gluetun/wireguard/
               name: wgconfig
               readOnly: true
-            - mountPath: /tmp/gluetun/forwarded_port
-              name: portforwardingstatusfile
+            - mountPath: /tmp/gluetun
+              name: vpn-stats
       initContainers:
         - name: generate-wg-config
           image: ghcr.io/kanareklife/pia-wg-config:v1.2.0
@@ -129,13 +127,13 @@ spec:
       volumes:
         - name: config
           persistentVolumeClaim:
-            claimName: qbittorrent-config-pvc
+            claimName: downloads-config-pvc
         - name: downloads
           persistentVolumeClaim:
             claimName: downloads-pvc
         - name: wgconfig
           emptyDir: {}
-        - name: portforwardingstatusfile
+        - name: vpn-stats
           emptyDir: {}
         - name: run
           emptyDir: {}
