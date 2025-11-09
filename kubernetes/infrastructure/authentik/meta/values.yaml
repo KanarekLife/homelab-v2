@@ -45,6 +45,11 @@ server:
         - name: default-gateway
           namespace: kube-system
 
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+
 worker:
   env:
     - name: AUTHENTIK_POSTGRESQL__USERNAME
@@ -68,6 +73,11 @@ worker:
           name: authentik-secret
           key: email-password
 
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+
 redis:
   enabled: true
   master:
@@ -80,3 +90,6 @@ redis:
       requests:
         memory: 30Mi
         cpu: 25m
+
+  metrics:
+    enabled: false
