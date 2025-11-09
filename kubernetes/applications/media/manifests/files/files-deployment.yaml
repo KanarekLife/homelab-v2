@@ -44,9 +44,7 @@ spec:
             - name: config
               mountPath: /config
             - name: media
-              mountPath: /sources/media
-            - name: downloads
-              mountPath: /sources/downloads
+              mountPath: /media
             - name: configmap
               mountPath: /config.yaml
               subPath: config.yaml
@@ -68,6 +66,3 @@ spec:
         - name: media
           persistentVolumeClaim:
             claimName: media-pvc
-        - name: downloads
-          persistentVolumeClaim:
-            claimName: downloads-pvc

@@ -37,7 +37,7 @@ spec:
                 - ALL
           resources:
             limits:
-              gpu.intel.com/i915: 1
+              gpu.intel.com/i915: "1"
       volumes:
         - name: config
           persistentVolumeClaim:
