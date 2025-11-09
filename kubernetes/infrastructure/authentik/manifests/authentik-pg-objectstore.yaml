@@ -1,0 +1,18 @@
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: authentik-pg-objectstore
+  namespace: authentik
+spec:
+  configuration:
+    destinationPath: s3://homelab-nieradko-com-cnpg-backup/
+    endpointURL: https://s3.eu-central-003.backblazeb2.com
+    s3Credentials:
+      accessKeyId:
+        key: AWS_ACCESS_KEY_ID
+        name: media-database-b2-backup-secret
+      secretAccessKey:
+        key: AWS_SECRET_ACCESS_KEY
+        name: media-database-b2-backup-secret
+    wal:
+      compression: gzip

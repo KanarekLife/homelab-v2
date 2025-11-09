@@ -20,3 +20,8 @@ spec:
       owner: media-admin
       secret:
         name: media-database-secret
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: media-database-objectstore

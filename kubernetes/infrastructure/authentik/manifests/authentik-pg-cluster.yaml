@@ -23,6 +23,11 @@ spec:
       owner: authentik
       secret:
         name: authentik-pg-secret
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: authentik-pg-objectstore
 
   monitoring:
     enablePodMonitor: false

@@ -8,12 +8,15 @@ metadata:
 spec:
   project: infrastructure
   sources:
-    - repoURL: https://cloudnative-pg.github.io/charts
+    - repoURL: https://cloudnative-pg.io/charts
       chart: cloudnative-pg
       targetRevision: 0.26.1
       helm:
         valueFiles:
           - $repo/kubernetes/infrastructure/cloudnative-pg/meta/values.yaml
+    - repoURL: https://cloudnative-pg.io/charts
+      chart: plugin-barman-cloud
+      targetRevision: 0.2.0
     - repoURL: https://github.com/KanarekLife/homelab-v2
       targetRevision: main
       ref: repo
