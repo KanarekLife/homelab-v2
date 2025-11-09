@@ -13,13 +13,6 @@ spec:
       labels:
         app: radarr
     spec:
-      securityContext:
-        runAsNonRoot: true
-        seccompProfile:
-          type: RuntimeDefault
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
       containers:
         - name: radarr
           image: linuxserver/radarr:5.28.0
@@ -37,14 +30,47 @@ spec:
               value: "1000"
             - name: TZ
               value: Europe/Warsaw
+            - name: RADARR__APP__INSTANCENAME
+              value: radarr
+            - name: RADARR__POSTGRES__HOST
+              value: media-database-cluster-rw.media.svc.cluster.local
+            - name: RADARR__POSTGRES__USER
+              valueFrom:
+                secretKeyRef:
+                  name: media-database-secret
+                  key: username
+            - name: RADARR__POSTGRES__PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: media-database-secret
+                  key: password
+            - name: RADARR__POSTGRES__MAINDB
+              value: radarr
+            - name: RADARR__POSTGRES__LOGDB
+              value: radarr-log
+            - name: RADARR__AUTH__METHOD
+              value: "External"
+            - name: RADARR__AUTH__REQUIRED
+              value: "Enabled"
+            - name: RADARR__AUTH__APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: radarr-apikey-secret
+                  key: apikey
           ports:
             - containerPort: 7878
           securityContext:
             readOnlyRootFilesystem: true
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       volumes:
         - name: config
-          persistentVolumeClaim:
-            claimName: radarr-config-pvc
+          emptyDir: {}
         - name: media
           persistentVolumeClaim:
             claimName: media-pvc
