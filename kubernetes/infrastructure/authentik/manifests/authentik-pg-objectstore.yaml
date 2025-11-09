@@ -10,9 +10,9 @@ spec:
     s3Credentials:
       accessKeyId:
         key: AWS_ACCESS_KEY_ID
-        name: media-database-b2-backup-secret
+        name: authentik-pg-b2-backup-secret
       secretAccessKey:
         key: AWS_SECRET_ACCESS_KEY
-        name: media-database-b2-backup-secret
+        name: authentik-pg-b2-backup-secret
     wal:
       compression: gzip
