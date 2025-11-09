@@ -13,13 +13,6 @@ spec:
       labels:
         app: bazarr
     spec:
-      securityContext:
-        runAsNonRoot: true
-        seccompProfile:
-          type: RuntimeDefault
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
       containers:
         - name: bazarr
           image: lscr.io/linuxserver/bazarr:1.5.3
@@ -37,14 +30,36 @@ spec:
               value: "1000"
             - name: TZ
               value: Europe/Warsaw
+            - name: POSTGRES_ENABLED
+              value: "true"
+            - name: POSTGRES_HOST
+              value: media-database-cluster-rw.media.svc.cluster.local
+            - name: POSTGRES_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: media-database-secret
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: media-database-secret
+                  key: password
+            - name: POSTGRES_DATABASE
+              value: bazarr
           ports:
             - containerPort: 6767
           securityContext:
             readOnlyRootFilesystem: true
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       volumes:
         - name: config
-          persistentVolumeClaim:
-            claimName: bazarr-config-pvc
+          emptyDir: {}
         - name: media
           persistentVolumeClaim:
             claimName: media-pvc
