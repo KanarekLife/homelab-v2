@@ -1,0 +1,22 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: media-database-cluster
+  namespace: media
+  annotations:
+    argocd.argoproj.io/sync-options: Delete=false
+spec:
+  instances: 3
+  primaryUpdateStrategy: unsupervised
+  storage:
+    size: 5Gi
+  resources:
+    requests:
+      cpu: 25m
+      memory: 125Mi
+  bootstrap:
+    initdb:
+      database: media
+      owner: media-admin
+      secret:
+        name: media-database-secret
