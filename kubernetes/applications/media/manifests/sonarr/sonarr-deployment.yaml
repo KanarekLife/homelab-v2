@@ -13,13 +13,6 @@ spec:
       labels:
         app: sonarr
     spec:
-      securityContext:
-        runAsNonRoot: true
-        seccompProfile:
-          type: RuntimeDefault
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
       containers:
         - name: sonarr
           image: linuxserver/sonarr:4.0.16
@@ -37,14 +30,47 @@ spec:
               value: "1000"
             - name: TZ
               value: Europe/Warsaw
+            - name: SONARR__APP__INSTANCENAME
+              value: sonarr
+            - name: SONARR__POSTGRES__HOST
+              value: media-database-cluster-rw.media.svc.cluster.local
+            - name: SONARR__POSTGRES__USER
+              valueFrom:
+                secretKeyRef:
+                  name: media-database-secret
+                  key: username
+            - name: SONARR__POSTGRES__PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: media-database-secret
+                  key: password
+            - name: SONARR__POSTGRES__MAINDB
+              value: sonarr
+            - name: SONARR__POSTGRES__LOGDB
+              value: sonarr-log
+            - name: SONARR__AUTH__METHOD
+              value: "External"
+            - name: SONARR__AUTH__REQUIRED
+              value: "Enabled"
+            - name: SONARR__AUTH__APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: sonarr-apikey-secret
+                  key: apikey
           ports:
             - containerPort: 8989
           securityContext:
             readOnlyRootFilesystem: true
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       volumes:
         - name: config
-          persistentVolumeClaim:
-            claimName: sonarr-config-pvc
+          emptyDir: {}
         - name: media
           persistentVolumeClaim:
             claimName: media-pvc
