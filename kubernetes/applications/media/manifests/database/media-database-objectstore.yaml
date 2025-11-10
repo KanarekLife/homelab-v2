@@ -16,3 +16,4 @@ spec:
         name: media-database-b2-backup-secret
     wal:
       compression: gzip
+  retentionPolicy: "7d"

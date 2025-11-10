@@ -16,3 +16,4 @@ spec:
         name: authentik-pg-b2-backup-secret
     wal:
       compression: gzip
+  retentionPolicy: "7d"
