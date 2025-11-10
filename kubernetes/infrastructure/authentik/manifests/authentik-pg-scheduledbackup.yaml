@@ -7,3 +7,7 @@ spec:
   backupOwnerReference: self
   cluster:
     name: authentik-pg-cluster
+  immediate: true
+  method: plugin
+  pluginConfiguration:
+    name: barman-cloud.cloudnative-pg.io
