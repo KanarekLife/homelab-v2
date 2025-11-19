@@ -22,7 +22,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: files
-          image: ghcr.io/gtsteffaniak/filebrowser:1.0.1-beta
+          image: ghcr.io/gtsteffaniak/filebrowser:1.1.0-beta
           env:
             - name: TZ
               value: "Europe/Warsaw"
