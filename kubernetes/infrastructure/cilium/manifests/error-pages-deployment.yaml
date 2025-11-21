@@ -22,7 +22,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: error-pages
-          image: ghcr.io/tarampampam/error-pages:3.7
+          image: ghcr.io/tarampampam/error-pages:3.8
           ports:
             - containerPort: 8080
               protocol: TCP
