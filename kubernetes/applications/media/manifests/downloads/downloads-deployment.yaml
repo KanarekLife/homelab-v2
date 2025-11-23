@@ -94,6 +94,24 @@ spec:
               readOnly: true
             - mountPath: /tmp/gluetun
               name: vpn-stats
+          readinessProbe:
+            exec:
+              command:
+                - /gluetun-entrypoint
+                - healthcheck
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 1
+          livenessProbe:
+            exec:
+              command:
+                - /gluetun-entrypoint
+                - healthcheck
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 1
       initContainers:
         - name: generate-wg-config
           image: ghcr.io/kanareklife/pia-wg-config:v1.2.0
