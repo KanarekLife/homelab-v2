@@ -48,6 +48,15 @@ spec:
               value: bazarr
           ports:
             - containerPort: 6767
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 6767
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
           securityContext:
             readOnlyRootFilesystem: true
       securityContext:
@@ -59,7 +68,8 @@ spec:
         fsGroup: 1000
       volumes:
         - name: config
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: bazarr-config-pvc
         - name: media
           persistentVolumeClaim:
             claimName: media-pvc
