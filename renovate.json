@@ -21,5 +21,16 @@
     "fileMatch": [
       "/kubernetes/.+\\.ya?ml$/"
     ]
-  }
+  },
+  "packageRules": [
+    {
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "linuxserver/transmission"
+      ],
+      "allowedVersions": "<=2000.0.0"
+    }
+  ]
 }
