@@ -14,7 +14,7 @@ spec:
       helm:
         releaseName: metrics-server
     - repoURL: https://github.com/alex1989hu/kubelet-serving-cert-approver
-      targetRevision: v0.10.0
+      targetRevision: v0.10.1
       path: deploy/standalone
   destination:
     name: in-cluster
