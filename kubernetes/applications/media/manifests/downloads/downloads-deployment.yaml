@@ -8,6 +8,8 @@ spec:
   selector:
     matchLabels:
       app: downloads
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -112,6 +114,15 @@ spec:
             periodSeconds: 5
             timeoutSeconds: 5
             failureThreshold: 1
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  [
+                    "/bin/sh",
+                    "-c",
+                    "(ip rule del table 51820; ip -6 rule del table 51820) || true",
+                  ]
       initContainers:
         - name: generate-wg-config
           image: ghcr.io/kanareklife/pia-wg-config:v1.2.0
