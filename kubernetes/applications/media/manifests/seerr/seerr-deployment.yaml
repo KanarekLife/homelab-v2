@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: seerr-deployment
+  namespace: media
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: seerr
+  template:
+    metadata:
+      labels:
+        app: seerr
+    spec:
+      containers:
+        - name: seerr
+          image: ghcr.io/fallenbagel/jellyseerr:2.7.3
+          volumeMounts:
+            - name: config
+              mountPath: /app/config
+            - name: run
+              mountPath: /run
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: Europe/Warsaw
+            - name: DB_TYPE
+              value: postgres
+            - name: DB_HOST
+              value: media-database-cluster-rw.media.svc.cluster.local
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: media-database-secret
+                  key: username
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: media-database-secret
+                  key: password
+            - name: DB_NAME
+              value: seerr
+          ports:
+            - containerPort: 5055
+          livenessProbe:
+            httpGet:
+              path: /api/v1/status
+              port: 5055
+            initialDelaySeconds: 20
+            timeoutSeconds: 3
+            periodSeconds: 15
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /api/v1/status
+              port: 5055
+            initialDelaySeconds: 20
+            timeoutSeconds: 3
+            periodSeconds: 15
+            failureThreshold: 3
+          securityContext:
+            readOnlyRootFilesystem: true
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      volumes:
+        - name: config
+          emptyDir: {}
+        - name: run
+          emptyDir: {}

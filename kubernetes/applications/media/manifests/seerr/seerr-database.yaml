@@ -1,0 +1,10 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: seerr-database
+  namespace: media
+spec:
+  name: seerr
+  owner: media-admin
+  cluster:
+    name: media-database-cluster

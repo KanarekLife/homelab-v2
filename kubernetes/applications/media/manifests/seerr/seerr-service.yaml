@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: seerr-service
+  namespace: media
+spec:
+  selector:
+    app: seerr
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 5055
+      targetPort: 5055
