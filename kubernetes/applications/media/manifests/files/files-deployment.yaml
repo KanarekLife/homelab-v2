@@ -48,6 +48,8 @@ spec:
             - name: configmap
               mountPath: /config.yaml
               subPath: config.yaml
+            - name: cache
+              mountPath: /cache
           ports:
             - containerPort: 80
           securityContext:
@@ -66,3 +68,5 @@ spec:
         - name: media
           persistentVolumeClaim:
             claimName: media-pvc
+        - name: cache
+          emptyDir: {}

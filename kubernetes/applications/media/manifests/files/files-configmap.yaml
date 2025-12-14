@@ -9,6 +9,7 @@ data:
       sources:
         - path: /media
           name: Media
+      cacheDir: /cache
     auth:
       methods:
         password:
