@@ -51,7 +51,7 @@ spec:
             runAsGroup: 1000
             readOnlyRootFilesystem: true
         - name: vpn
-          image: qmcgaw/gluetun:v3.40.3
+          image: qmcgaw/gluetun:v3.40.4
           securityContext:
             capabilities:
               add:
