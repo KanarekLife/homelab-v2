@@ -45,6 +45,8 @@ spec:
               mountPath: /config
             - name: media
               mountPath: /media
+            - name: storage
+              mountPath: /storage
             - name: configmap
               mountPath: /config.yaml
               subPath: config.yaml
@@ -68,5 +70,8 @@ spec:
         - name: media
           persistentVolumeClaim:
             claimName: media-pvc
+        - name: storage
+          persistentVolumeClaim:
+            claimName: files-storage-pvc
         - name: cache
           emptyDir: {}

@@ -9,6 +9,8 @@ data:
       sources:
         - path: /media
           name: Media
+        - path: /storage
+          name: Storage
       cacheDir: /cache
     auth:
       methods:
