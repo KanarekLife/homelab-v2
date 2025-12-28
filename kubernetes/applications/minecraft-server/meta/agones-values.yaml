@@ -1,0 +1,3 @@
+agones:
+  allocator:
+    install: true

@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: minecraft-server
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: applications
+  sources:
+    - repoURL: https://agones.dev/chart/stable
+      chart: agones
+      targetRevision: 1.19.0
+      helm:
+        releaseName: agones
+        valueFiles:
+          - $repo/kubernetes/applications/minecraft-server/meta/agones-values.yaml
+    - repoURL: https://github.com/jeremylvln/Shulker
+      targetRevision: HEAD
+      path: kube/helm
+      helm:
+        releaseName: shulker
+        valueFiles:
+          - $repo/kubernetes/applications/minecraft-server/meta/shulker-values.yaml
+    - repoURL: https://github.com/KanarekLife/homelab-v2
+      targetRevision: HEAD
+      ref: repo
+  destination:
+    name: in-cluster
+    namespace: minecraft-server
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
