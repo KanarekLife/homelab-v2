@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: minecraft-server-service
+  namespace: minecraft-server
+spec:
+  selector:
+    server: minecraft-server
+  type: LoadBalancer
+  ports:
+    - port: 25565
+      targetPort: minecraft

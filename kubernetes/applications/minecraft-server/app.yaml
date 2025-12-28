@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: minecraft-server
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: applications
+  sources:
+    - repoURL: https://github.com/KanarekLife/homelab-v2
+      targetRevision: HEAD
+      ref: repo
+    - repoURL: https://github.com/KanarekLife/homelab-v2
+      targetRevision: HEAD
+      path: kubernetes/applications/minecraft-server/manifests
+  destination:
+    name: in-cluster
+    namespace: minecraft-server
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

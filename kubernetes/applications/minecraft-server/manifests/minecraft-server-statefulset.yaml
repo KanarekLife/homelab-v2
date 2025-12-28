@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: minecraft-server-statefulset
+  namespace: minecraft-server
+spec:
+  replicas: 1
+  serviceName: minecraft-server-service
+  selector:
+    matchLabels:
+      server: minecraft-server
+  template:
+    metadata:
+      labels:
+        server: minecraft-server
+    spec:
+      containers:
+        - name: minecraft-server
+          env:
+            - name: EULA
+              value: "TRUE"
+            - name: "MOTD"
+              value: "mc.nieradko.com"
+            - name: "OPS"
+              value: |
+                73293d5c-bfcc-4bf7-9de1-77724d87c954
+            - name: "MAX_PLAYERS"
+              value: "10"
+            - name: "SERVER_NAME"
+              value: "mc.nieradko.com"
+            - name: "MEMORY"
+              value: "4G"
+            - name: "TYPE"
+              value: "PAPER"
+            - name: "VERSION"
+              value: "1.21.10"
+          image: itzg/minecraft-server
+          stdin: true
+          tty: true
+          volumeMounts:
+            - mountPath: /data
+              name: minecraft-server-pvc
+          resources:
+            limits:
+              memory: 4096Mi
+            requests:
+              memory: 2048Mi
+          livenessProbe:
+            exec:
+              command: ["mc-health"]
+            initialDelaySeconds: 120
+            periodSeconds: 60
+          readinessProbe:
+            exec:
+              command: ["mc-health"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          ports:
+            - containerPort: 25565
+              name: minecraft
+  volumeClaimTemplates:
+    - metadata:
+        name: minecraft-server-pvc
+        annotations:
+          argocd.argoproj.io/sync-options: Delete=false
+        labels:
+          recurring-job-group.longhorn.io/backup: enabled
+          recurring-job.longhorn.io/source: enabled
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi
