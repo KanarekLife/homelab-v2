@@ -52,3 +52,6 @@ l2announcements:
 
 externalIPs:
   enabled: true
+
+nonIdempotentAnnotations:
+  argocd.argoproj.io/compare-options: IgnoreExtraneous
