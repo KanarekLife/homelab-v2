@@ -89,7 +89,8 @@ spec:
                   volumeName: wgconfig
                   optional: false
             - name: VPN_PORT_FORWARDING_UP_COMMAND
-              value: '/bin/sh -c "echo PORTS={{PORTS}} > /tmp/gluetun/forwarded_port.env"'
+              value: >-
+                /bin/sh -c "echo PORTS=\'{{PORTS}}\' > /tmp/gluetun/forwarded_port.env"
           volumeMounts:
             - mountPath: /gluetun/wireguard/
               name: wgconfig
@@ -125,13 +126,14 @@ spec:
                   ]
       initContainers:
         - name: generate-wg-config
-          image: ghcr.io/kanareklife/pia-wg-config:v1.2.0
+          image: ghcr.io/kanareklife/pia-wg-config:v1.3.0
           args:
             [
               "-r",
               "$(PIA_REGION)",
               "-o",
               "/out/wg0.conf",
+              "--debug",
               "--servername-file",
               "/out/wg0.conf.servername",
               "$(PIA_USERNAME)",
