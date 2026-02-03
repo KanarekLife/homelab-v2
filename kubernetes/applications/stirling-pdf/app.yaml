@@ -8,13 +8,6 @@ metadata:
 spec:
   project: applications
   sources:
-    - repoURL: https://stirling-tools.github.io/Stirling-PDF-chart
-      chart: stirling-pdf-chart
-      targetRevision: 3.0.0
-      helm:
-        releaseName: stirling
-        valueFiles:
-          - $repo/kubernetes/applications/stirling-pdf/meta/values.yaml
     - repoURL: https://github.com/KanarekLife/homelab-v2
       targetRevision: HEAD
       ref: repo

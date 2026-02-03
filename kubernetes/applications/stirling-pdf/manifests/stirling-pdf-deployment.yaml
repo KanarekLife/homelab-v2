@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stirling-pdf-deployment
+  namespace: stirling-pdf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stirling-pdf
+  template:
+    metadata:
+      labels:
+        app: stirling-pdf
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: files
+          image: stirlingtools/stirling-pdf:2.4.3-fat
+          env:
+            - name: TZ
+              value: "Europe/Warsaw"
+            - name: SECURITY_ENABLELOGIN
+              value: "false"
+            - name: LANGS
+              value: "en_GB"
+            - name: MODE
+              value: "BOTH"
+            - name: UI_APPNAME
+              value: "pdf.nieradko.com"
+            - name: UI_APPNAVBARNAME
+              value: "pdf.nieradko.com"
+            - name: SYSTEM_SHOWUPDATE
+              value: "false"
+          ports:
+            - containerPort: 8080
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
