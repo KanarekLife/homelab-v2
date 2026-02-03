@@ -1,0 +1,19 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: stirling-pdf-httproute
+  namespace: stirling-pdf
+spec:
+  parentRefs:
+    - name: default-gateway
+      namespace: kube-system
+  hostnames:
+    - pdf.nieradko.com
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: stirling-stirling-pdf-chart
+          port: 8080
