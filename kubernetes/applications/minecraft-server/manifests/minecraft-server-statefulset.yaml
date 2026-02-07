@@ -4,7 +4,7 @@ metadata:
   name: minecraft-server-statefulset
   namespace: minecraft-server
 spec:
-  replicas: 1
+  replicas: 0
   serviceName: minecraft-server-service
   selector:
     matchLabels:
