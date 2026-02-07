@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: suwayomi-server-deployment
+  namespace: media
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: suwayomi-server
+  template:
+    metadata:
+      labels:
+        app: suwayomi-server
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: suwayomi-server
+          image: ghcr.io/suwayomi/suwayomi-server:v2.1.1867
+          env:
+            - name: TZ
+              value: "Europe/Warsaw"
+            - name: AUTO_DOWNLOAD_CHAPTERS
+              value: "true"
+            - name: EXTENSION_REPOS
+              value: '["https://raw.githubusercontent.com/keiyoushi/extensions/repo/index.min.json"]'
+            - name: UPDATE_MANGA_INFO
+              value: "true"
+            - name: AUTH_MODE
+              value: "basic_auth"
+            - name: AUTH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: suwayomi-server-auth-secret
+                  key: username
+            - name: AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: suwayomi-server-auth-secret
+                  key: password
+            - name: DATABASE_TYPE
+              value: "POSTGRESQL"
+            - name: DATABASE_URL
+              value: "postgresql://media-database-cluster-rw.media.svc.cluster.local:5432/suwayomi"
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: media-database-secret
+                  key: username
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: media-database-secret
+                  key: password
+          volumeMounts:
+            - name: files
+              mountPath: /home/suwayomi/.local/share/Tachidesk
+          ports:
+            - containerPort: 4567
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+      volumes:
+        - name: files
+          persistentVolumeClaim:
+            claimName: suwayomi-server-files-pvc

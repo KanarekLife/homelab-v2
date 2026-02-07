@@ -1,0 +1,16 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: suwayomi-server-files-pvc
+  namespace: media
+  annotations:
+    argocd.argoproj.io/sync-options: Delete=false
+  labels:
+    recurring-job-group.longhorn.io/backup: enabled
+    recurring-job.longhorn.io/source: enabled
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 16Gi
