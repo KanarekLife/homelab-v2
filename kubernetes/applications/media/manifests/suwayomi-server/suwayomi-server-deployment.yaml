@@ -22,7 +22,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: suwayomi-server
-          image: ghcr.io/suwayomi/suwayomi-server:v2.1.1867
+          image: ghcr.io/suwayomi/suwayomi-server:v2.1.2065
           env:
             - name: TZ
               value: "Europe/Warsaw"
