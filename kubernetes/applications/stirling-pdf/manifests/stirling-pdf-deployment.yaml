@@ -40,8 +40,14 @@ spec:
               value: "false"
           ports:
             - containerPort: 8080
+          volumeMounts:
+            - mountPath: /usr/local/bin
+              name: bin
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
               drop:
                 - ALL
+      volumes:
+        - name: bin
+          emptyDir: {}
