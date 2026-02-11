@@ -32,13 +32,13 @@ spec:
               value: "1000"
             - name: TZ
               value: Europe/Warsaw
-            - name: PEERPORT
-              valueFrom:
-                fileKeyRef:
-                  key: PORTS
-                  path: forwarded_port.env
-                  volumeName: vpn-stats
-                  optional: false
+            # - name: PEERPORT
+            #   valueFrom:
+            #     fileKeyRef:
+            #       key: PORTS
+            #       path: forwarded_port.env
+            #       volumeName: vpn-stats
+            #       optional: true
           ports:
             - name: web-ui
               containerPort: 9091
@@ -68,7 +68,7 @@ spec:
             - name: FIREWALL_INPUT_PORTS
               value: "9091"
             - name: VPN_PORT_FORWARDING
-              value: "on"
+              value: "off"
             - name: VPN_PORT_FORWARDING_PROVIDER
               value: "private internet access"
             - name: VPN_PORT_FORWARDING_USERNAME
@@ -126,14 +126,16 @@ spec:
                   ]
       initContainers:
         - name: generate-wg-config
-          image: ghcr.io/kanareklife/pia-wg-config:v1.3.0
+          image: ghcr.io/kanareklife/pia-wg-config:v1.5.0
           args:
             [
+              "-v",
               "-r",
               "$(PIA_REGION)",
               "-o",
               "/out/wg0.conf",
               "--debug",
+              "--skip-if-present",
               "--servername-file",
               "/out/wg0.conf.servername",
               "$(PIA_USERNAME)",
