@@ -22,7 +22,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: files
-          image: stirlingtools/stirling-pdf:2.4.6-fat
+          image: stirlingtools/stirling-pdf:2.5.1-fat
           env:
             - name: TZ
               value: "Europe/Warsaw"
