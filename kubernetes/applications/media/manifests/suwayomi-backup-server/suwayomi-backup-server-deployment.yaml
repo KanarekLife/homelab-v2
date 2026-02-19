@@ -1,0 +1,154 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: suwayomi-backup-server-deployment
+  namespace: media
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: suwayomi-backup-server
+  template:
+    metadata:
+      labels:
+        app: suwayomi-backup-server
+    spec:
+      containers:
+        - name: suwayomi-backup-server
+          image: ghcr.io/suwayomi/suwayomi-server:v2.1.1867
+          env:
+            - name: TZ
+              value: "Europe/Warsaw"
+            - name: AUTO_DOWNLOAD_CHAPTERS
+              value: "true"
+            - name: EXTENSION_REPOS
+              value: '["https://raw.githubusercontent.com/keiyoushi/extensions/repo/index.min.json"]'
+            - name: UPDATE_MANGA_INFO
+              value: "true"
+            - name: AUTH_MODE
+              value: "basic_auth"
+            - name: AUTH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: suwayomi-backup-server-auth-secret
+                  key: username
+            - name: AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: suwayomi-backup-server-auth-secret
+                  key: password
+            - name: DATABASE_TYPE
+              value: "POSTGRESQL"
+            - name: DATABASE_URL
+              value: "postgresql://media-database-cluster-rw.media.svc.cluster.local:5432/suwayomi-backup"
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: media-database-secret
+                  key: username
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: media-database-secret
+                  key: password
+            - name: FLARESOLVERR_ENABLED
+              value: "true"
+            - name: FLARESOLVERR_URL
+              value: "http://flaresolverr-service.media.svc.cluster.local:8191"
+          volumeMounts:
+            - name: files
+              mountPath: /home/suwayomi/.local/share/Tachidesk
+          ports:
+            - containerPort: 4567
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+        - name: vpn
+          image: qmcgaw/gluetun:v3.41.1
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+          env:
+            - name: VPN_SERVICE_PROVIDER
+              value: "custom"
+            - name: VPN_TYPE
+              value: "wireguard"
+            - name: DNS_ADDRESS
+              value: "1.1.1.1"
+            - name: DOT
+              value: "off"
+            - name: FIREWALL_INPUT_PORTS
+              value: "4567"
+          volumeMounts:
+            - mountPath: /gluetun/wireguard/
+              name: wgconfig
+              readOnly: true
+          readinessProbe:
+            exec:
+              command:
+                - /gluetun-entrypoint
+                - healthcheck
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 1
+          livenessProbe:
+            exec:
+              command:
+                - /gluetun-entrypoint
+                - healthcheck
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 1
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  [
+                    "/bin/sh",
+                    "-c",
+                    "(ip rule del table 51820; ip -6 rule del table 51820) || true",
+                  ]
+      initContainers:
+        - name: generate-wg-config
+          image: ghcr.io/kanareklife/pia-wg-config:v1.5.0
+          args:
+            [
+              "-v",
+              "-r",
+              "$(PIA_REGION)",
+              "-o",
+              "/out/wg0.conf",
+              "--debug",
+              "--skip-if-present",
+              "--servername-file",
+              "/out/wg0.conf.servername",
+              "$(PIA_USERNAME)",
+              "$(PIA_PASSWORD)",
+            ]
+          env:
+            - name: PIA_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: pia-vpn-secret
+                  key: username
+            - name: PIA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pia-vpn-secret
+                  key: password
+            - name: PIA_REGION
+              value: "al"
+          volumeMounts:
+            - mountPath: /out
+              name: wgconfig
+      volumes:
+        - name: files
+          persistentVolumeClaim:
+            claimName: suwayomi-backup-server-files-pvc
+        - name: wgconfig
+          emptyDir: {}

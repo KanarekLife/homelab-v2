@@ -1,0 +1,39 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: suwayomi-backup-server-httproute
+  namespace: authentik
+spec:
+  parentRefs:
+    - name: default-gateway
+      namespace: kube-system
+  hostnames:
+    - suwayomi-backup.nieradko.com
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: ak-outpost-default
+          port: 9000
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: suwayomi-backup-server-bridge-httproute
+  namespace: media
+spec:
+  parentRefs:
+    - name: default-gateway
+      namespace: kube-system
+  hostnames:
+    - suwayomi-backup-bridge.nieradko.com
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: suwayomi-backup-server-service
+          port: 4567
