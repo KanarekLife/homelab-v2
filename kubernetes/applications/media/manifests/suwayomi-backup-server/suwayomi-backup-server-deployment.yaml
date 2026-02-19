@@ -55,6 +55,10 @@ spec:
               value: "true"
             - name: FLARESOLVERR_URL
               value: "http://flaresolverr-service.media.svc.cluster.local:8191"
+            - name: WEB_UI_FLAVOR
+              value: "WebUI"
+            - name: WEB_UI_CHANNEL
+              value: "stable"
           volumeMounts:
             - name: files
               mountPath: /home/suwayomi/.local/share/Tachidesk
