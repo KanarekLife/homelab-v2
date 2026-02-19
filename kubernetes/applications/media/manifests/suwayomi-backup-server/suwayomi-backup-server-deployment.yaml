@@ -51,10 +51,6 @@ spec:
                 secretKeyRef:
                   name: media-database-secret
                   key: password
-            - name: FLARESOLVERR_ENABLED
-              value: "true"
-            - name: FLARESOLVERR_URL
-              value: "http://flaresolverr-service.media.svc.cluster.local:8191"
             - name: WEB_UI_FLAVOR
               value: "WebUI"
             - name: WEB_UI_CHANNEL
