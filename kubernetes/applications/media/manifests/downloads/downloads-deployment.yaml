@@ -50,6 +50,13 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             readOnlyRootFilesystem: true
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 2048Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
         - name: vpn
           image: qmcgaw/gluetun:v3.41.1
           securityContext:
@@ -124,6 +131,13 @@ spec:
                     "-c",
                     "(ip rule del table 51820; ip -6 rule del table 51820) || true",
                   ]
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
       initContainers:
         - name: generate-wg-config
           image: ghcr.io/kanareklife/pia-wg-config:v1.5.0
