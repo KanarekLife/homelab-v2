@@ -38,7 +38,7 @@ spec:
                   name: suwayomi-backup-server-auth-secret
                   key: password
             - name: DATABASE_TYPE
-              value: "POSTGRESQL"
+              value: "H2"
             - name: DATABASE_URL
               value: "postgresql://media-database-cluster-rw.media.svc.cluster.local:5432/suwayomi-backup"
             - name: DATABASE_USERNAME
