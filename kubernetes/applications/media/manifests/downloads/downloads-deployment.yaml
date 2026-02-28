@@ -8,8 +8,6 @@ spec:
   selector:
     matchLabels:
       app: downloads
-  strategy:
-    type: Recreate
   template:
     metadata:
       labels:
@@ -32,13 +30,13 @@ spec:
               value: "1000"
             - name: TZ
               value: Europe/Warsaw
-            # - name: PEERPORT
-            #   valueFrom:
-            #     fileKeyRef:
-            #       key: PORTS
-            #       path: forwarded_port.env
-            #       volumeName: vpn-stats
-            #       optional: true
+            - name: PEERPORT
+              valueFrom:
+                fileKeyRef:
+                  key: PORTS
+                  path: forwarded_port.env
+                  volumeName: vpn-stats
+                  optional: true
           ports:
             - name: web-ui
               containerPort: 9091
@@ -75,7 +73,7 @@ spec:
             - name: FIREWALL_INPUT_PORTS
               value: "9091"
             - name: VPN_PORT_FORWARDING
-              value: "off"
+              value: "on"
             - name: VPN_PORT_FORWARDING_PROVIDER
               value: "private internet access"
             - name: VPN_PORT_FORWARDING_USERNAME
@@ -167,7 +165,7 @@ spec:
                   name: pia-vpn-secret
                   key: password
             - name: PIA_REGION
-              value: "fi"
+              value: "fi_2"
           volumeMounts:
             - mountPath: /out
               name: wgconfig
