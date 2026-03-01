@@ -1,0 +1,9 @@
+# user-volume.patch.yaml
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: hdd-disk
+provisioning:
+    diskSelector:
+        match: disk.transport == 'usb'
+    grow: true
+    minSize: 100GB
