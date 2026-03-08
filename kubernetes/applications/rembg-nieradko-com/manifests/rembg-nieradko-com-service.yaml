@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: rembg-nieradko-com-service
+  namespace: rembg-nieradko-com
+spec:
+  selector:
+    app: rembg-nieradko-com
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 80

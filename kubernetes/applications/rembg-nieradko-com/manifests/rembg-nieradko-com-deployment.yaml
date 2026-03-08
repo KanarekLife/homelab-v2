@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rembg-nieradko-com-deployment
+  namespace: rembg-nieradko-com
+spec:
+  selector:
+    matchLabels:
+      app: rembg-nieradko-com
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: rembg-nieradko-com
+    spec:
+      containers:
+        - name: rembg-nieradko-com
+          image: ghcr.io/kanareklife/rembg.nieradko.com:v1.0.0
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 80
