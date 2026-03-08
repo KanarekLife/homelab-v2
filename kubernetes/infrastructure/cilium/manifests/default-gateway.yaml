@@ -14,6 +14,17 @@ spec:
         namespaces:
           from: All
       port: 80
+    - name: https-root
+      hostname: "nieradko.com"
+      protocol: HTTPS
+      allowedRoutes:
+        namespaces:
+          from: All
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: root-homelab-cert-tls
     - name: https
       hostname: "*.nieradko.com"
       protocol: HTTPS

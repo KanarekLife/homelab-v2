@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: personal-website
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: applications
+  sources:
+    - repoURL: https://github.com/KanarekLife/homelab-v2
+      targetRevision: HEAD
+      ref: repo
+    - repoURL: https://github.com/KanarekLife/homelab-v2
+      targetRevision: HEAD
+      path: kubernetes/applications/personal-website/manifests
+  destination:
+    name: in-cluster
+    namespace: personal-website
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
