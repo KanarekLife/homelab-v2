@@ -43,6 +43,16 @@ spec:
           volumeMounts:
             - mountPath: /usr/local/bin
               name: bin
+            - mountPath: /configs
+              name: configs
+            - mountPath: /tmp
+              name: tmp
+            - mountPath: /home/stirlingpdfuser
+              name: home
+            - mountPath: /logs
+              name: logs
+            - mountPath: /pipeline
+              name: pipeline
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -50,4 +60,15 @@ spec:
                 - ALL
       volumes:
         - name: bin
+          emptyDir: {}
+        - name: configs
+          persistentVolumeClaim:
+            claimName: stirling-pdf-config-pvc
+        - name: tmp
+          emptyDir: {}
+        - name: home
+          emptyDir: {}
+        - name: logs
+          emptyDir: {}
+        - name: pipeline
           emptyDir: {}
