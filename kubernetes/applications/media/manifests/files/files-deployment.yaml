@@ -52,6 +52,10 @@ spec:
               subPath: config.yaml
             - name: cache
               mountPath: /cache
+            - name: suwayomi-files
+              mountPath: /suwayomi-files
+            - name: suwayomi-backup-files
+              mountPath: /suwayomi-backup-files
           ports:
             - containerPort: 80
           securityContext:
@@ -73,5 +77,11 @@ spec:
         - name: storage
           persistentVolumeClaim:
             claimName: files-storage-pvc
+        - name: suwayomi-files
+          persistentVolumeClaim:
+            claimName: suwayomi-server-files-pvc
+        - name: suwayomi-backup-files
+          persistentVolumeClaim:
+            claimName: suwayomi-backup-server-files-pvc
         - name: cache
           emptyDir: {}

@@ -11,6 +11,10 @@ data:
           name: Media
         - path: /storage
           name: Storage
+        - path: /suwayomi-files
+          name: Suwayomi Files
+        - path: /suwayomi-backup-files
+          name: Suwayomi Backup Files
       cacheDir: /cache
     auth:
       methods:
