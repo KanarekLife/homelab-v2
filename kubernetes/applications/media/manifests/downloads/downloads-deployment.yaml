@@ -50,11 +50,9 @@ spec:
             readOnlyRootFilesystem: true
           resources:
             limits:
-              cpu: 1000m
               memory: 2048Mi
             requests:
-              cpu: 100m
-              memory: 256Mi
+              memory: 2048Mi
         - name: vpn
           image: qmcgaw/gluetun:v3.41.1
           securityContext:
