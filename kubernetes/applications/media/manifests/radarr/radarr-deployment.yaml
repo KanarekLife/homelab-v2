@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: radarr
-          image: linuxserver/radarr:6.0.4
+          image: linuxserver/radarr:6.1.1
           volumeMounts:
             - name: config
               mountPath: /config
