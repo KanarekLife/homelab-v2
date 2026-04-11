@@ -37,6 +37,15 @@ spec:
                   path: forwarded_port.env
                   volumeName: vpn-stats
                   optional: true
+          livenessProbe:
+            exec:
+              command:
+                - transmission-remote
+                - -pt
+            initialDelaySeconds: 60 # Gives Transmission time to fully start before first check
+            periodSeconds: 120 # Checks every 2 minutes to avoid spamming the external port-checker
+            timeoutSeconds: 10 # Fails the check if the command takes longer than 10s
+            failureThreshold: 3 # Restarts the pod only after 3 consecutive failures
           ports:
             - name: web-ui
               containerPort: 9091
