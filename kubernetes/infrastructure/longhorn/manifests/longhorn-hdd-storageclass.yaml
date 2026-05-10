@@ -6,4 +6,4 @@ provisioner: driver.longhorn.io
 parameters:
   numberOfReplicas: "3"
   staleReplicaTimeout: "30"
-  diskSelector: "HDD"
+  diskSelector: "hdd"
