@@ -1,9 +1,21 @@
 # user-volume.patch.yaml
+
+machine:
+    kubelet:
+        extraMounts:
+            - destination: /var/mnt/hdd-disk
+              type: bind
+              source: /var/mnt/hdd-disk
+              options:
+                  - bind
+                  - rshared
+                  - rw
+---
 apiVersion: v1alpha1
 kind: UserVolumeConfig
 name: hdd-disk
 provisioning:
     diskSelector:
-        match: disk.transport == 'usb'
+        match: disk.transport == 'usb' && disk.size > 3000000000000u
     grow: true
-    minSize: 100GB
+    minSize: 100GiB
