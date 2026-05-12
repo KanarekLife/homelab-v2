@@ -1,0 +1,17 @@
+machine:
+  kubelet:
+    extraConfig:
+      systemReserved:
+        cpu: "500m"
+        memory: "1Gi"
+        ephemeral-storage: "2Gi"
+      kubeReserved:
+        cpu: "500m"
+        memory: "1Gi"
+        ephemeral-storage: "1Gi"
+      # Revert to only enforcing pod boundaries
+      enforceNodeAllocatable:
+        - pods
+      evictionHard:
+        memory.available: "500Mi"
+        nodefs.available: "10%"
