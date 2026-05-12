@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: komga-service
+  namespace: media
+spec:
+  selector:
+    app: komga
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 25600
+      targetPort: 25600

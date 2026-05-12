@@ -56,6 +56,8 @@ spec:
               mountPath: /suwayomi-files
             - name: suwayomi-backup-files
               mountPath: /suwayomi-backup-files
+            - name: komga-data
+              mountPath: /komga-data
           ports:
             - containerPort: 80
           securityContext:
@@ -83,5 +85,8 @@ spec:
         - name: suwayomi-backup-files
           persistentVolumeClaim:
             claimName: suwayomi-backup-server-files-pvc
+        - name: komga-data
+          persistentVolumeClaim:
+            claimName: komga-data-pvc
         - name: cache
           emptyDir: {}
