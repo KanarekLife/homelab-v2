@@ -1,0 +1,9 @@
+cluster:
+  etcd:
+    extraArgs:
+      # Increase heartbeat to 1 second
+      heartbeat-interval: "1000"
+      # Increase election timeout to 10 seconds
+      election-timeout: "10000"
+      # Keep the database lean to speed up read/writes
+      auto-compaction-retention: "5m"
