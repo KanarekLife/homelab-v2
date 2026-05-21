@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: suwayomi-backup-server
-          image: ghcr.io/suwayomi/suwayomi-server:v2.2.2142
+          image: ghcr.io/suwayomi/suwayomi-server:v2.2.2166
           env:
             - name: TZ
               value: "Europe/Warsaw"
