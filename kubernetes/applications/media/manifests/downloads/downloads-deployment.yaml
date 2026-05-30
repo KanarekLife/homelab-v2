@@ -172,7 +172,7 @@ spec:
                   name: pia-vpn-secret
                   key: password
             - name: PIA_REGION
-              value: "fi_2"
+              value: "fi"
           volumeMounts:
             - mountPath: /out
               name: wgconfig
