@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: personal-website
-          image: ghcr.io/kanareklife/personal-website:1.0.0
+          image: ghcr.io/kanareklife/personal-website:1.1.0
           resources:
             limits:
               memory: "128Mi"
