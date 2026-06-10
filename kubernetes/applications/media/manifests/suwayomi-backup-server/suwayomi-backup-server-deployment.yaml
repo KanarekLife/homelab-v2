@@ -73,37 +73,34 @@ spec:
                 - NET_ADMIN
           env:
             - name: VPN_SERVICE_PROVIDER
-              value: "custom"
+              value: "protonvpn"
             - name: VPN_TYPE
               value: "wireguard"
-            - name: DNS_ADDRESS
-              value: "1.1.1.1"
-            - name: DOT
-              value: "off"
+            - name: WIREGUARD_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: proton-vpn-secret
+                  key: privatekey-nop2p
             - name: FIREWALL_INPUT_PORTS
               value: "4567"
-          volumeMounts:
-            - mountPath: /gluetun/wireguard/
-              name: wgconfig
-              readOnly: true
           readinessProbe:
             exec:
               command:
                 - /gluetun-entrypoint
                 - healthcheck
-            initialDelaySeconds: 10
-            periodSeconds: 5
+            initialDelaySeconds: 15 # Gives the VPN 15s to handshake first
+            periodSeconds: 10
             timeoutSeconds: 5
-            failureThreshold: 1
+            failureThreshold: 3 # Allows 3 strikes before killing the pod
           livenessProbe:
             exec:
               command:
                 - /gluetun-entrypoint
                 - healthcheck
-            initialDelaySeconds: 10
-            periodSeconds: 5
+            initialDelaySeconds: 30 # Gives plenty of time for initial setup
+            periodSeconds: 10
             timeoutSeconds: 5
-            failureThreshold: 1
+            failureThreshold: 3 # Allows 3 strikes before killing the pod
           lifecycle:
             postStart:
               exec:
@@ -113,42 +110,7 @@ spec:
                     "-c",
                     "(ip rule del table 51820; ip -6 rule del table 51820) || true",
                   ]
-      initContainers:
-        - name: generate-wg-config
-          image: ghcr.io/kanareklife/pia-wg-config:v1.5.0
-          args:
-            [
-              "-v",
-              "-r",
-              "$(PIA_REGION)",
-              "-o",
-              "/out/wg0.conf",
-              "--debug",
-              "--skip-if-present",
-              "--servername-file",
-              "/out/wg0.conf.servername",
-              "$(PIA_USERNAME)",
-              "$(PIA_PASSWORD)",
-            ]
-          env:
-            - name: PIA_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: pia-vpn-secret
-                  key: username
-            - name: PIA_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: pia-vpn-secret
-                  key: password
-            - name: PIA_REGION
-              value: "al"
-          volumeMounts:
-            - mountPath: /out
-              name: wgconfig
       volumes:
         - name: files
           persistentVolumeClaim:
             claimName: suwayomi-backup-server-files-pvc
-        - name: wgconfig
-          emptyDir: {}

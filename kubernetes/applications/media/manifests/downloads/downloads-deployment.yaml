@@ -70,43 +70,24 @@ spec:
                 - NET_ADMIN
           env:
             - name: VPN_SERVICE_PROVIDER
-              value: "custom"
+              value: "protonvpn"
             - name: VPN_TYPE
               value: "wireguard"
-            - name: DNS_ADDRESS
-              value: "1.1.1.1"
-            - name: DOT
-              value: "off"
+            - name: WIREGUARD_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: proton-vpn-secret
+                  key: privatekey-p2p
+            - name: PORT_FORWARD_ONLY
+              value: "on"
             - name: FIREWALL_INPUT_PORTS
               value: "9091"
             - name: VPN_PORT_FORWARDING
               value: "on"
-            - name: VPN_PORT_FORWARDING_PROVIDER
-              value: "private internet access"
-            - name: VPN_PORT_FORWARDING_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: pia-vpn-secret
-                  key: username
-            - name: VPN_PORT_FORWARDING_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: pia-vpn-secret
-                  key: password
-            - name: SERVER_NAMES
-              valueFrom:
-                fileKeyRef:
-                  key: SERVER_NAME
-                  path: wg0.conf.servername
-                  volumeName: wgconfig
-                  optional: false
             - name: VPN_PORT_FORWARDING_UP_COMMAND
               value: >-
                 /bin/sh -c "echo PORTS=\'{{PORTS}}\' > /tmp/gluetun/forwarded_port.env"
           volumeMounts:
-            - mountPath: /gluetun/wireguard/
-              name: wgconfig
-              readOnly: true
             - mountPath: /tmp/gluetun
               name: vpn-stats
           readinessProbe:
@@ -114,19 +95,19 @@ spec:
               command:
                 - /gluetun-entrypoint
                 - healthcheck
-            initialDelaySeconds: 10
-            periodSeconds: 5
+            initialDelaySeconds: 15 # Gives the VPN 15s to handshake first
+            periodSeconds: 10
             timeoutSeconds: 5
-            failureThreshold: 1
+            failureThreshold: 3 # Allows 3 strikes before killing the pod
           livenessProbe:
             exec:
               command:
                 - /gluetun-entrypoint
                 - healthcheck
-            initialDelaySeconds: 10
-            periodSeconds: 5
+            initialDelaySeconds: 30 # Gives plenty of time for initial setup
+            periodSeconds: 10
             timeoutSeconds: 5
-            failureThreshold: 1
+            failureThreshold: 3 # Allows 3 strikes before killing the pod
           lifecycle:
             postStart:
               exec:
@@ -143,39 +124,6 @@ spec:
             requests:
               cpu: 100m
               memory: 256Mi
-      initContainers:
-        - name: generate-wg-config
-          image: ghcr.io/kanareklife/pia-wg-config:v1.5.0
-          args:
-            [
-              "-v",
-              "-r",
-              "$(PIA_REGION)",
-              "-o",
-              "/out/wg0.conf",
-              "--debug",
-              "--skip-if-present",
-              "--servername-file",
-              "/out/wg0.conf.servername",
-              "$(PIA_USERNAME)",
-              "$(PIA_PASSWORD)",
-            ]
-          env:
-            - name: PIA_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: pia-vpn-secret
-                  key: username
-            - name: PIA_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: pia-vpn-secret
-                  key: password
-            - name: PIA_REGION
-              value: "fi"
-          volumeMounts:
-            - mountPath: /out
-              name: wgconfig
       volumes:
         - name: config
           persistentVolumeClaim:
@@ -183,9 +131,7 @@ spec:
         - name: media
           persistentVolumeClaim:
             claimName: media-pvc
-        - name: wgconfig
+        - name: run
           emptyDir: {}
         - name: vpn-stats
-          emptyDir: {}
-        - name: run
           emptyDir: {}
