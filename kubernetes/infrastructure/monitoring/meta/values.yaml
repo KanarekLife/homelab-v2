@@ -6,14 +6,20 @@ crds:
   enabled: true
 
 # --- Talos control-plane scrape targets ---------------------------------
-# Talos binds kube-scheduler / kube-controller-manager / kube-proxy / etcd
-# metrics to localhost by default, so these are NOT scrapable from pods and
-# would show as perpetually-down targets. Disable until the Talos machine
-# config exposes them on 0.0.0.0.
+# Talos binds kube-scheduler / kube-controller-manager / etcd metrics to
+# localhost by default, so they are NOT scrapable from pods and would show as
+# perpetually-down targets. Re-enable each here once the Talos machineconfig
+# (applied manually, see README) exposes them:
+#   scheduler/controller-manager -> --bind-address=0.0.0.0
+#   etcd                         -> cluster.etcd.extraArgs listen-metrics-urls
+#                                   http://0.0.0.0:2381 (then set kubeEtcd
+#                                   targetPort 2381)
 kubeControllerManager:
   enabled: false
 kubeScheduler:
   enabled: false
+# kube-proxy is replaced by Cilium (kubeProxyReplacement=true); it does not run
+# in this cluster, so this stays disabled permanently — not a Talos follow-up.
 kubeProxy:
   enabled: false
 kubeEtcd:
@@ -34,8 +40,19 @@ prometheusOperator:
 
 prometheus:
   prometheusSpec:
+    # Two independent caps; whichever is hit first triggers block deletion.
+    #   retention (time)   -> ceiling on how far back we can query.
+    #   retentionSize      -> HARD guard against filling the PVC.
+    # At ~6.8k samples/s over ~200k series, 15d of compacted blocks is roughly
+    # 13-17GiB. retentionSize bounds ONLY the persistent blocks; it does NOT
+    # include the WAL/head (~1-2GiB) or the scratch space compaction needs (a
+    # merged block is written before its sources are deleted, ~+2GiB spike).
+    # On a 20Gi PVC (ext4 reserves ~5%, so ~19Gi usable) the guard must leave
+    # room for both, so cap blocks at 14GiB: 14 + ~2 WAL + ~2 compaction ≈ 18GiB
+    # peak, comfortably under 19Gi. The previous 18GiB cap could peak at ~21GiB
+    # and overflow the volume.
     retention: 15d
-    retentionSize: 18GiB
+    retentionSize: 14GiB
     # Scrape ALL ServiceMonitors/PodMonitors/Rules in the cluster (e.g. the
     # existing Longhorn ServiceMonitor), not only chart-labelled ones.
     serviceMonitorSelectorNilUsesHelmValues: false
@@ -82,6 +99,19 @@ grafana:
     enabled: true
     storageClassName: longhorn
     size: 5Gi
+  # Ship the bundled Kubernetes dashboards (nodes / pods / workloads / cluster
+  # capacity) and the Prometheus + Alertmanager datasources out of the box.
+  defaultDashboardsEnabled: true
+  sidecar:
+    dashboards:
+      enabled: true
+      # Auto-load dashboards from ConfigMaps in ANY namespace (label
+      # grafana_dashboard=1), so apps like Longhorn that ship their own
+      # dashboard are picked up without touching this file.
+      searchNamespace: ALL
+    datasources:
+      enabled: true
+      searchNamespace: ALL
   # Grafana is exposed only through the authentik outpost (see manifests/
   # grafana-httproute.yaml), so authentication is handled upstream: treat any
   # request that reaches Grafana as an admin and drop the local login form.
