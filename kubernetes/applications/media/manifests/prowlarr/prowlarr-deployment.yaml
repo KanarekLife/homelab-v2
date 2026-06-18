@@ -59,6 +59,13 @@ spec:
             - containerPort: 9696
           securityContext:
             readOnlyRootFilesystem: true
+          resources:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
       securityContext:
         runAsNonRoot: true
         seccompProfile:

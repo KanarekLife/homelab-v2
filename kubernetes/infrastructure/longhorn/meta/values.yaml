@@ -1,6 +1,11 @@
 defaultSettings:
   storageMinimalAvailablePercentage: "15"
   storageReservedPercentageForDefaultDisk: "15"
+  # Throttle replica rebuilds: on this 3-node cluster a burst of concurrent
+  # rebuilds (e.g. after a PVC clone/shrink) saturates a node's disk I/O and
+  # starves the co-located etcd member, taking down the API/login. Heal one
+  # replica at a time instead of the default of 3.
+  concurrentReplicaRebuildPerNodeLimit: "1"
 
 persistence:
   reclaimPolicy: Retain
