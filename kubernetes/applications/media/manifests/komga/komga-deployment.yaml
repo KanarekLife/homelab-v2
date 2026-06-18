@@ -60,10 +60,13 @@ spec:
           resources:
             requests:
               cpu: 100m
-              memory: 512Mi
+              # komga (JVM) scans libraries at ~975Mi resident; request reflects
+              # that real working set so the scheduler does not co-locate it with
+              # other heavy pods, and the limit leaves OOM headroom above peak.
+              memory: 768Mi
             limits:
               cpu: 1000m
-              memory: 1Gi
+              memory: 2Gi
       volumes:
         - name: config
           persistentVolumeClaim:
