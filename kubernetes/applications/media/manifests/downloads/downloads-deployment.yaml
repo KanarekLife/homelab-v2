@@ -85,8 +85,12 @@ spec:
             - name: VPN_PORT_FORWARDING
               value: "on"
             - name: VPN_PORT_FORWARDING_UP_COMMAND
+              # Write the env file atomically (temp file + mv on the same volume) so the
+              # kubelet never reads an empty/half-written file while resolving the
+              # transmission PEERPORT fileKeyRef. The single quotes around the value are
+              # REQUIRED by the k8s env-file parser (VAR='value'); do not remove them.
               value: >-
-                /bin/sh -c "echo PORTS=\'{{PORTS}}\' > /tmp/gluetun/forwarded_port.env"
+                /bin/sh -c "echo PORTS=\'{{PORTS}}\' > /tmp/gluetun/forwarded_port.env.tmp && mv /tmp/gluetun/forwarded_port.env.tmp /tmp/gluetun/forwarded_port.env"
           volumeMounts:
             - mountPath: /tmp/gluetun
               name: vpn-stats
