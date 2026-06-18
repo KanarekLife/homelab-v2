@@ -1,0 +1,136 @@
+# grafana/loki values — SingleBinary (monolithic) mode, tuned for a small,
+# memory-constrained 3-node Talos cluster. Goal: minimal footprint log store so
+# Grafana can show pod logs. Single replica, filesystem storage on Longhorn, no
+# memcached, no gateway, ~72h retention.
+
+# Run Loki as a single process (one StatefulSet) instead of the chart's default
+# SimpleScalable (read/write/backend) topology.
+deploymentMode: SingleBinary
+
+loki:
+  # Single tenant — drop the X-Scope-OrgID requirement so the datasource and
+  # Alloy can talk to Loki without tenant headers.
+  auth_enabled: false
+
+  # Loki 3.x defaults to structured-metadata which requires the v13/tsdb schema.
+  commonConfig:
+    # Single instance => no replication.
+    replication_factor: 1
+    path_prefix: /var/loki
+
+  storage:
+    type: filesystem
+    filesystem:
+      chunks_directory: /var/loki/chunks
+      rules_directory: /var/loki/rules
+
+  # Current schema for Loki 3.x: tsdb index + filesystem object store, v13.
+  schemaConfig:
+    configs:
+      - from: "2024-04-01"
+        store: tsdb
+        object_store: filesystem
+        schema: v13
+        index:
+          prefix: index_
+          period: 24h
+
+  # Retention: keep ~72h of logs. The compactor performs deletion; without
+  # `retention_enabled` it only compacts the index and never frees old chunks.
+  limits_config:
+    retention_period: 72h
+    # Defaults carried over from the chart so log shippers don't get rejected.
+    reject_old_samples: true
+    reject_old_samples_max_age: 168h
+    max_cache_freshness_per_query: 10m
+    split_queries_by_interval: 15m
+    query_timeout: 300s
+    volume_enabled: true
+
+  # In SingleBinary mode the compactor runs inside the single binary; this block
+  # is merged into the rendered Loki config (loki.compactor).
+  compactor:
+    retention_enabled: true
+    delete_request_store: filesystem
+    retention_delete_delay: 2h
+    retention_delete_worker_count: 50
+    compaction_interval: 10m
+
+# --- SingleBinary deployment --------------------------------------------------
+singleBinary:
+  replicas: 1
+  # Lean resources — single small log store.
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 768Mi
+  persistence:
+    enabled: true
+    storageClass: longhorn
+    size: 10Gi
+    accessModes:
+      - ReadWriteOnce
+
+# --- Disable every other deployment topology (required for SingleBinary) ------
+write:
+  replicas: 0
+read:
+  replicas: 0
+backend:
+  replicas: 0
+ingester:
+  replicas: 0
+distributor:
+  replicas: 0
+querier:
+  replicas: 0
+queryFrontend:
+  replicas: 0
+queryScheduler:
+  replicas: 0
+indexGateway:
+  replicas: 0
+compactor:
+  replicas: 0
+bloomGateway:
+  replicas: 0
+bloomPlanner:
+  replicas: 0
+bloomBuilder:
+  replicas: 0
+ruler:
+  replicas: 0
+
+# --- Drop the heavy / unnecessary extras --------------------------------------
+# memcached caches default to multi-GB allocations — far too large for this
+# cluster, and unnecessary for low-volume single-binary Loki.
+chunksCache:
+  enabled: false
+resultsCache:
+  enabled: false
+
+# No nginx gateway — the datasource and Alloy talk to the loki Service directly
+# (http://loki:3100). Removes one extra Deployment.
+gateway:
+  enabled: false
+
+# Canary, test, self-monitoring and bundled MinIO all add pods we don't want.
+lokiCanary:
+  enabled: false
+test:
+  enabled: false
+monitoring:
+  selfMonitoring:
+    enabled: false
+    grafanaAgent:
+      installOperator: false
+  serviceMonitor:
+    enabled: false
+  rules:
+    enabled: false
+  dashboards:
+    enabled: false
+minio:
+  enabled: false
