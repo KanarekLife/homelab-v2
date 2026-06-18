@@ -1,0 +1,122 @@
+# kube-prometheus-stack values — tuned for a small, memory-constrained 3-node
+# Talos cluster. Goal: data-driven resource right-sizing (history for the VPA
+# recommender) + Grafana/Alertmanager.
+
+crds:
+  enabled: true
+
+# --- Talos control-plane scrape targets ---------------------------------
+# Talos binds kube-scheduler / kube-controller-manager / kube-proxy / etcd
+# metrics to localhost by default, so these are NOT scrapable from pods and
+# would show as perpetually-down targets. Disable until the Talos machine
+# config exposes them on 0.0.0.0.
+kubeControllerManager:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeProxy:
+  enabled: false
+kubeEtcd:
+  enabled: false
+
+prometheusOperator:
+  # Use cert-manager (already in-cluster) for the admission webhook certs
+  # instead of the helm patch jobs, which are unreliable under ArgoCD.
+  admissionWebhooks:
+    certManager:
+      enabled: true
+  resources:
+    requests:
+      cpu: 10m
+      memory: 96Mi
+    limits:
+      memory: 256Mi
+
+prometheus:
+  prometheusSpec:
+    retention: 15d
+    retentionSize: 18GiB
+    # Scrape ALL ServiceMonitors/PodMonitors/Rules in the cluster (e.g. the
+    # existing Longhorn ServiceMonitor), not only chart-labelled ones.
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    probeSelectorNilUsesHelmValues: false
+    scrapeConfigSelectorNilUsesHelmValues: false
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: longhorn
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 20Gi
+    resources:
+      requests:
+        cpu: 100m
+        memory: 512Mi
+      limits:
+        memory: 1536Mi
+
+alertmanager:
+  alertmanagerSpec:
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: longhorn
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 2Gi
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
+      limits:
+        memory: 128Mi
+
+grafana:
+  persistence:
+    enabled: true
+    storageClassName: longhorn
+    size: 5Gi
+  # Grafana is exposed only through the authentik outpost (see manifests/
+  # grafana-httproute.yaml), so authentication is handled upstream: treat any
+  # request that reaches Grafana as an admin and drop the local login form.
+  grafana.ini:
+    users:
+      auto_assign_org_role: Admin
+    auth:
+      disable_login_form: true
+    auth.anonymous:
+      enabled: true
+      org_role: Admin
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      memory: 384Mi
+
+prometheus-node-exporter:
+  # All three nodes are control-plane; tolerate the taint in case it is ever
+  # re-applied so the DaemonSet still covers every node.
+  tolerations:
+    - effect: NoSchedule
+      operator: Exists
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      memory: 64Mi
+
+kube-state-metrics:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 64Mi
+    limits:
+      memory: 192Mi

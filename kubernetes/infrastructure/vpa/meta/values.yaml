@@ -1,0 +1,29 @@
+# Vertical Pod Autoscaler — recommender ONLY. The updater and admission
+# controller are disabled so the VPA never mutates running pods; it just emits
+# CPU/memory recommendations (read them with: kubectl describe vpa <name>).
+# Create VerticalPodAutoscaler objects with updateMode: "Off" per workload to
+# get right-sizing suggestions to compare against the requests/limits we set.
+
+recommender:
+  enabled: true
+  # Default storage builds history from metrics-server + checkpoints (robust).
+  # To use long-term Prometheus history instead, set:
+  #   extraArgs:
+  #     storage: prometheus
+  #     prometheus-address: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
+  resources:
+    requests:
+      cpu: 25m
+      memory: 128Mi
+    limits:
+      memory: 512Mi
+
+updater:
+  enabled: false
+
+admissionController:
+  enabled: false
+
+# Install the VerticalPodAutoscaler CRDs (not present in this cluster).
+crds:
+  enabled: true

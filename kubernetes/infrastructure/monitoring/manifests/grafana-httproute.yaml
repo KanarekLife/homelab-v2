@@ -1,0 +1,24 @@
+# Routes grafana.nieradko.com to the authentik forward-auth outpost, matching
+# the pattern used by the other internal apps. NOTE: an authentik Proxy
+# Provider + Application for grafana.nieradko.com (backend
+# http://kube-prometheus-stack-grafana.monitoring.svc:80) must exist for this
+# to resolve end-to-end.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: grafana-httproute
+  namespace: authentik
+spec:
+  parentRefs:
+    - name: default-gateway
+      namespace: kube-system
+  hostnames:
+    - grafana.nieradko.com
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: ak-outpost-default
+          port: 9000
