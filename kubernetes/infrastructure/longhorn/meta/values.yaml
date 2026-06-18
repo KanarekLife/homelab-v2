@@ -1,6 +1,12 @@
 defaultSettings:
   storageMinimalAvailablePercentage: "15"
   storageReservedPercentageForDefaultDisk: "15"
+  # Volumes only use ~64% of their allocated size, but at the default 100%
+  # over-provisioning the schedulable pool is capped at physical disk size,
+  # which blocked new volumes (e.g. Prometheus) from scheduling. Allow thin
+  # over-provisioning; storageMinimalAvailablePercentage still hard-guards the
+  # disk from actually filling.
+  storageOverProvisioningPercentage: "200"
   # Throttle replica rebuilds: on this 3-node cluster a burst of concurrent
   # rebuilds (e.g. after a PVC clone/shrink) saturates a node's disk I/O and
   # starves the co-located etcd member, taking down the API/login. Heal one
