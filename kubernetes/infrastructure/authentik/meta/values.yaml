@@ -15,6 +15,14 @@ authentik:
     from: "HomeLab SSO <sso@nieradko.com>"
 
 server:
+  # Guaranteed CPU so the server is not starved (and probe-killed) on a busy
+  # node; no CPU limit so the CPU-heavy startup is not throttled.
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      memory: 768Mi
   env:
     - name: AUTHENTIK_POSTGRESQL__USERNAME
       valueFrom:
@@ -51,6 +59,12 @@ server:
       enabled: true
 
 worker:
+  resources:
+    requests:
+      cpu: 150m
+      memory: 384Mi
+    limits:
+      memory: 768Mi
   env:
     - name: AUTHENTIK_POSTGRESQL__USERNAME
       valueFrom:
