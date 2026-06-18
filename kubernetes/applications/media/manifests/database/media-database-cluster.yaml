@@ -8,6 +8,16 @@ metadata:
 spec:
   instances: 3
   primaryUpdateStrategy: unsupervised
+  # Promote a replica before updating the primary (rolling updates / node
+  # drains switch over instead of restarting the primary in place) to minimize
+  # write downtime.
+  primaryUpdateMethod: switchover
+  # Spread the 3 instances across distinct nodes so a node failure always
+  # leaves a healthy replica to fail over to.
+  affinity:
+    enablePodAntiAffinity: true
+    topologyKey: kubernetes.io/hostname
+    podAntiAffinityType: required
   storage:
     size: 10Gi
   resources:
