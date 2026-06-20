@@ -1,0 +1,14 @@
+# Recommend-only VPA (updateMode: Off) — emits CPU/memory right-sizing
+# suggestions; never mutates the pod. Read with: kubectl describe vpa -n media bazarr
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: bazarr
+  namespace: media
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: bazarr-deployment
+  updatePolicy:
+    updateMode: "Off"

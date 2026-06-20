@@ -1,0 +1,13 @@
+# Recommend-only VPA (updateMode: Off). Read: kubectl describe vpa -n media suwayomi-backup-server
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: suwayomi-backup-server
+  namespace: media
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: suwayomi-backup-server-deployment
+  updatePolicy:
+    updateMode: "Off"

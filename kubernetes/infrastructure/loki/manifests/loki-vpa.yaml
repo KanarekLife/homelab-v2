@@ -1,0 +1,14 @@
+# Recommend-only VPA (updateMode: Off) for the Loki single-binary StatefulSet.
+# Recommend-only: never mutates pods. Read: kubectl describe vpa -n monitoring loki
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: loki
+  namespace: monitoring
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: loki
+  updatePolicy:
+    updateMode: "Off"

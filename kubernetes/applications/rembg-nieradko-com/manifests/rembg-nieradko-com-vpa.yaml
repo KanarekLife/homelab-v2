@@ -1,0 +1,13 @@
+# Recommend-only VPA (updateMode: Off). Read: kubectl describe vpa -n rembg-nieradko-com rembg-nieradko-com
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: rembg-nieradko-com
+  namespace: rembg-nieradko-com
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: rembg-nieradko-com-deployment
+  updatePolicy:
+    updateMode: "Off"

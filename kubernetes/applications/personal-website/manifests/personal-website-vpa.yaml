@@ -1,0 +1,13 @@
+# Recommend-only VPA (updateMode: Off). Read: kubectl describe vpa -n personal-website personal-website
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: personal-website
+  namespace: personal-website
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: personal-website-deployment
+  updatePolicy:
+    updateMode: "Off"
