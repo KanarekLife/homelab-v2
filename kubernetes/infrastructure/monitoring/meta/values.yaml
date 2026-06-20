@@ -128,7 +128,7 @@ grafana:
       cpu: 50m
       memory: 128Mi
     limits:
-      memory: 384Mi
+      memory: 640Mi
 
 prometheus-node-exporter:
   # All three nodes are control-plane; tolerate the taint in case it is ever
