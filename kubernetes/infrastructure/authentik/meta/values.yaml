@@ -65,6 +65,18 @@ worker:
       memory: 384Mi
     limits:
       memory: 768Mi
+  # `ak healthcheck` is a Python CLI cold-start. On a CPU-saturated node it
+  # can't get a slice within the chart's default 3s probe timeout, so a fully
+  # healthy worker gets liveness-killed in a restart loop. Relax the timeouts
+  # so the worker tolerates a busy node (see cluster-at-capacity note).
+  livenessProbe:
+    timeoutSeconds: 10
+    failureThreshold: 5
+  readinessProbe:
+    timeoutSeconds: 10
+  startupProbe:
+    timeoutSeconds: 10
+    failureThreshold: 60
   env:
     - name: AUTHENTIK_POSTGRESQL__USERNAME
       valueFrom:

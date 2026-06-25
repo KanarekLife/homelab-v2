@@ -9,6 +9,11 @@ metadata:
     recurring-job-group.longhorn.io/backup: enabled
     recurring-job.longhorn.io/source: enabled
 spec:
+  # Pin the server-defaulted storageClassName explicitly. The default SC
+  # ("longhorn") is injected at creation; under server-side apply ArgoCD
+  # otherwise computes a patch setting it back to null, which the API rejects
+  # because storageClassName is immutable on a bound PVC.
+  storageClassName: longhorn
   accessModes:
     - ReadWriteMany
   resources:
