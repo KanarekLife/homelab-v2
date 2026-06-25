@@ -4,7 +4,8 @@ metadata:
   name: anki-card-factory-deployment
   namespace: anki-card-factory
 spec:
-  replicas: 1
+  replicas: 0   # TEMPORARY: scaled to 0 to release RWO volumes for a one-time
+                # data load (dict + audio). Restored to 1 right after.
   strategy:
     # MANDATORY for an RWO Longhorn volume: a rolling update would deadlock on a
     # Multi-Attach error. Recreate detaches the old pod before the new attaches.
