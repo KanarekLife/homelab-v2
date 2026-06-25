@@ -17,7 +17,10 @@ spec:
           - $repo/kubernetes/infrastructure/cilium/meta/values.yaml
     - repoURL: https://github.com/kubernetes-sigs/gateway-api.git
       targetRevision: v1.5.1
-      path: config/crd/standard
+      # Cilium 1.19's Gateway API controller requires TLSRoute served at
+      # gateway.networking.k8s.io/v1alpha2, which only the experimental
+      # channel provides (standard ships TLSRoute serving v1 only).
+      path: config/crd/experimental
     - repoURL: https://github.com/KanarekLife/homelab-v2
       targetRevision: HEAD
       ref: repo
