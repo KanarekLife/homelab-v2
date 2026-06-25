@@ -22,6 +22,10 @@ data:
   PITCH_DICT: "アクセント辞典"
   FREQ_DICT: "JPDBv2㋕"
 
+  # ── LLM (OpenRouter) ── non-secret model fallback chain; OPENROUTER_API_KEY
+  # comes from the ExternalSecret. Free models, priority order.
+  LLM_MODELS: "nex-agi/nex-n2-pro:free,poolside/laguna-m.1:free,openrouter/free"
+
   # ── TTS ── VOICEVOX sidecar intentionally NOT deployed (cluster at capacity).
   # Sentence audio is disabled until a provider is configured. Leaving
   # TTS_PROVIDER unset keeps the pipeline working without a TTS step.
