@@ -34,3 +34,7 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      # gateway-api experimental CRDs exceed the 262144-byte client-side
+      # apply annotation limit; server-side apply avoids it.
+      - ServerSideApply=true
