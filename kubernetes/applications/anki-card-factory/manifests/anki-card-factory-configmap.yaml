@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: anki-card-factory-config
+  namespace: anki-card-factory
+data:
+  # ── Data paths ── writable state lives on the queue PVC mounted at /data.
+  # dict.sqlite (read-only) stays at the image default /app/data/dict.sqlite.
+  QUEUE_DB: /data/queue.sqlite
+  JOBS_DB: /data/jobs.sqlite
+  MEDIA_DIR: /data/media
+  DB_DRIVER: sqlite
+
+  # ── Dictionaries ── titles as present in the (later-ingested) dict.sqlite.
+  MEANING_DICTS: jmdict
+
+  # ── TTS ── VOICEVOX sidecar intentionally NOT deployed (cluster at capacity).
+  # Sentence audio is disabled until a provider is configured. Leaving
+  # TTS_PROVIDER unset keeps the pipeline working without a TTS step.
+
+  # ── OIDC login (Authentik) ── the non-secret half. The four OIDC_* values
+  # plus SESSION_SECRET (in the ExternalSecret) gate /api behind Authentik login.
+  # OIDC_CLIENT_ID / OIDC_CLIENT_SECRET / SESSION_SECRET come from the Secret.
+  OIDC_ISSUER: https://login.nieradko.com/application/o/anki-card-factory/
+  OIDC_REDIRECT_URL: https://anki.nieradko.com/api/auth/callback
+
+  # First/allowlisted admin. Matching email is granted admin role on login.
+  ADMIN_EMAILS: stanislaw.nieradko@xeler.it

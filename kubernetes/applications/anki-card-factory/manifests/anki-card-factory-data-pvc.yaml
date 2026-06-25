@@ -1,0 +1,25 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: anki-card-factory-data-pvc
+  namespace: anki-card-factory
+  annotations:
+    # Don't let an app/namespace delete reap the only non-regenerable state
+    # (staged cards in queue.sqlite + generated media).
+    argocd.argoproj.io/sync-options: Delete=false
+  labels:
+    recurring-job-group.longhorn.io/backup: enabled
+    recurring-job.longhorn.io/source: enabled
+spec:
+  # ReadWriteOnce, NOT RWX: the app is a single-writer SQLite service. Longhorn
+  # RWX is NFS under the hood and breaks SQLite locking + small-file perf. The
+  # Deployment uses strategy: Recreate so the single replica re-attaches cleanly.
+  #
+  # Pin the server-defaulted storageClassName explicitly so SSA doesn't try to
+  # null it back out (immutable on a bound PVC).
+  storageClassName: longhorn
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi

@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: anki-card-factory-deployment
+  namespace: anki-card-factory
+spec:
+  replicas: 1
+  strategy:
+    # MANDATORY for an RWO Longhorn volume: a rolling update would deadlock on a
+    # Multi-Attach error. Recreate detaches the old pod before the new attaches.
+    type: Recreate
+  selector:
+    matchLabels:
+      app: anki-card-factory
+  template:
+    metadata:
+      labels:
+        app: anki-card-factory
+    spec:
+      containers:
+        - name: anki-card-factory
+          image: ghcr.io/kanareklife/anki-card-factory:sha-adde16e
+          env:
+            - name: TZ
+              value: "Europe/Warsaw"
+            - name: PORT
+              value: "8000"
+          envFrom:
+            - configMapRef:
+                name: anki-card-factory-config
+            - secretRef:
+                name: anki-card-factory-secret
+          ports:
+            - containerPort: 8000
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: anki-card-factory-data-pvc

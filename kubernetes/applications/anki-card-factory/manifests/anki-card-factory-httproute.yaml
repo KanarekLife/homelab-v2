@@ -1,0 +1,19 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: anki-card-factory-httproute
+  namespace: anki-card-factory
+spec:
+  parentRefs:
+    - name: default-gateway
+      namespace: kube-system
+  hostnames:
+    - anki.nieradko.com
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: anki-card-factory-service
+          port: 8000
