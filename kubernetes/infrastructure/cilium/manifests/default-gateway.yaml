@@ -24,7 +24,9 @@ spec:
       tls:
         mode: Terminate
         certificateRefs:
-          - name: root-homelab-cert-tls
+          - group: ""
+            kind: Secret
+            name: root-homelab-cert-tls
     - name: https
       hostname: "*.nieradko.com"
       protocol: HTTPS
@@ -35,4 +37,6 @@ spec:
       tls:
         mode: Terminate
         certificateRefs:
-          - name: wildcard-homelab-cert-tls
+          - group: ""
+            kind: Secret
+            name: wildcard-homelab-cert-tls

@@ -5,7 +5,9 @@ metadata:
   namespace: kube-system
 spec:
   parentRefs:
-    - name: default-gateway
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: default-gateway
       sectionName: https
   rules:
     - matches:
@@ -13,5 +15,8 @@ spec:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: error-pages-service
+        - group: ""
+          kind: Service
+          name: error-pages-service
           port: 8080
+          weight: 1
