@@ -26,9 +26,13 @@ data:
   # comes from the ExternalSecret. Free models, priority order.
   LLM_MODELS: "nex-agi/nex-n2-pro:free,poolside/laguna-m.1:free,openrouter/free"
 
-  # ── TTS ── VOICEVOX sidecar intentionally NOT deployed (cluster at capacity).
-  # Sentence audio is disabled until a provider is configured. Leaving
-  # TTS_PROVIDER unset keeps the pipeline working without a TTS step.
+  # ── TTS ── ElevenLabs (hosted; no sidecar, suits the at-capacity cluster).
+  # Matches the local setup. ELEVENLABS_API_KEY comes from the ExternalSecret.
+  # eleven_flash_v2_5 handles Japanese; stability/similarity/etc. left at app
+  # defaults (0.5/0.75/0/1, speaker-boost on).
+  TTS_PROVIDER: elevenlabs
+  ELEVENLABS_VOICE: WQz3clzUdMqvBf0jswZQ
+  ELEVENLABS_MODEL: eleven_flash_v2_5
 
   # ── OIDC login (Authentik) ── the non-secret half. The four OIDC_* values
   # plus SESSION_SECRET (in the ExternalSecret) gate /api behind Authentik login.
