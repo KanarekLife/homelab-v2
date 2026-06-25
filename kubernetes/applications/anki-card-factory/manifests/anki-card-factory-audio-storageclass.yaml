@@ -1,0 +1,15 @@
+# Dedicated Longhorn class for the read-only word-audio collection. The audio
+# (4.7Gi) is fully regenerable from the source themoeway collection, so it does
+# NOT need the default class's 3 replicas — 2 is enough redundancy and saves
+# ~9Gi of replica disk on an already-saturated cluster, plus less rebuild I/O.
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: anki-card-factory-audio
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: Delete
+parameters:
+  numberOfReplicas: "2"
+  staleReplicaTimeout: "30"
+  fsType: "ext4"

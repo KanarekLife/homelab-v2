@@ -1,0 +1,18 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: anki-card-factory-audio-pvc
+  namespace: anki-card-factory
+  annotations:
+    # Loaded once (4.7Gi tar-pipe); a re-load is painful, so don't let an
+    # app/namespace delete reap it. NOT backup-labelled: regenerable data.
+    argocd.argoproj.io/sync-options: Delete=false
+spec:
+  # 2-replica class (see anki-card-factory-audio-storageclass.yaml). RWO and
+  # mounted read-only into the single app pod.
+  storageClassName: anki-card-factory-audio
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 6Gi          # 4.7Gi collection + headroom

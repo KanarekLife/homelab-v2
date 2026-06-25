@@ -35,6 +35,9 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
+            - name: audio
+              mountPath: /audio
+              readOnly: true
           readinessProbe:
             httpGet:
               path: /healthz
@@ -58,3 +61,6 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: anki-card-factory-data-pvc
+        - name: audio
+          persistentVolumeClaim:
+            claimName: anki-card-factory-audio-pvc
