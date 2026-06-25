@@ -1,0 +1,11 @@
+# Cap kube-apiserver Go heap with a SOFT memory limit. With GOGC=100 and no
+# GOMEMLIMIT the apiserver retains ~1.8Gi RSS against a ~960Mi live heap; the
+# soft limit makes the Go GC collect sooner and return pages to the OS,
+# reclaiming ~400-700Mi per node without any risk of OOM-killing the apiserver.
+# Sized above the observed live heap (961Mi) to avoid GC thrashing.
+# Intentionally NO hard memory limit here — a too-low limit would crash the
+# control plane.
+cluster:
+  apiServer:
+    env:
+      GOMEMLIMIT: "1400MiB"
