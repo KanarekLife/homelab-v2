@@ -20,9 +20,6 @@ spec:
     - https://kubernetes-sigs.github.io/node-feature-discovery/charts
     - https://github.com/intel/intel-device-plugins-for-kubernetes
     - https://charts.longhorn.io/
-    - https://prometheus-community.github.io/helm-charts
-    - https://grafana.github.io/helm-charts
-    - https://charts.fairwinds.com/stable
   destinations:
     - namespace: "*"
       name: in-cluster
