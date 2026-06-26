@@ -17,6 +17,15 @@ spec:
       labels:
         app: anki-card-factory
     spec:
+      # Split-horizon DNS: login.nieradko.com resolves to the public WAN IP,
+      # which pods cannot hairpin back to — so OIDC discovery against the issuer
+      # times out and the app fails OPEN (auth silently disabled). Pin the issuer
+      # host to the in-cluster gateway LB IP; the gateway terminates TLS with the
+      # real login.nieradko.com cert (SNI unchanged), so discovery succeeds.
+      hostAliases:
+        - ip: "10.0.10.0"
+          hostnames:
+            - login.nieradko.com
       containers:
         - name: anki-card-factory
           image: ghcr.io/kanareklife/anki-card-factory:sha-adde16e
