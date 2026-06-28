@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: longhorn-default-requests
+  namespace: longhorn-system
+spec:
+  # The Longhorn chart ships longhorn-manager (and csi/engine/share-manager pods)
+  # with NO resource requests -> BestEffort QoS -> oom_score_adj=1000. Under node
+  # memory pressure the kernel then OOM-kills the *low-memory* longhorn-manager
+  # before the real memory hogs, which marks the node down and triggers the
+  # disk-NotReady -> rebuild-storm -> etcd-stall cascade.
+  #
+  # This LimitRange injects a small default REQUEST (no limits) into every pod in
+  # the namespace that doesn't set one, moving them to Burstable QoS so they are
+  # scored by actual usage instead of being killed first. Requests-only on purpose:
+  # a memory *limit* would risk cgroup-OOMing the I/O-heavy instance-managers.
+  # Node memory requests sit at ~45%, so this added reservation is well within
+  # headroom and also reduces overcommit (an OOM root cause).
+  limits:
+    - type: Container
+      defaultRequest:
+        cpu: 25m
+        memory: 128Mi
