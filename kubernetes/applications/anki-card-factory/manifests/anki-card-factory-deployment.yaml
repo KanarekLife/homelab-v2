@@ -17,18 +17,25 @@ spec:
       labels:
         app: anki-card-factory
     spec:
-      # Split-horizon DNS: login.nieradko.com resolves to the public WAN IP,
-      # which pods cannot hairpin back to — so OIDC discovery against the issuer
-      # times out and the app fails OPEN (auth silently disabled). Pin the issuer
-      # host to the in-cluster gateway LB IP; the gateway terminates TLS with the
-      # real login.nieradko.com cert (SNI unchanged), so discovery succeeds.
-      hostAliases:
-        - ip: "10.0.10.0"
-          hostnames:
-            - login.nieradko.com
+      # Keep this pod off talos-oug-a0q: that node is chronically overloaded and
+      # flaps, so even a Ready pod there is unreachable — the gateway's Envoy gets
+      # "upstream connect error / connection timed out" and anki.nieradko.com goes
+      # down. Schedule on a healthy node so the backend stays reachable.
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values: ["talos-oug-a0q"]
+      # OIDC split-horizon (login.nieradko.com unreachable from pods) is handled
+      # in-app via OIDC_BACKCHANNEL_HOST in the ConfigMap, which reroutes the
+      # server-side OIDC calls to authentik's in-cluster service. No hostAlias
+      # needed.
       containers:
         - name: anki-card-factory
-          image: ghcr.io/kanareklife/anki-card-factory:sha-adde16e
+          image: ghcr.io/kanareklife/anki-card-factory:sha-a73dc6a
           env:
             - name: TZ
               value: "Europe/Warsaw"
