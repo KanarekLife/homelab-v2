@@ -13,6 +13,9 @@ spec:
       labels:
         app: sonarr
     spec:
+      # temporary: pin to ako-lcg to offload oug
+      nodeSelector:
+        kubernetes.io/hostname: talos-ako-lcg
       containers:
         - name: sonarr
           image: linuxserver/sonarr:4.0.19
