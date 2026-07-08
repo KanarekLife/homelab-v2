@@ -13,6 +13,17 @@ spec:
       labels:
         app: files
     spec:
+      # temporary: prefer to keep off overloaded oug node
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values:
+                      - talos-oug-a0q
       securityContext:
         runAsNonRoot: true
         seccompProfile:

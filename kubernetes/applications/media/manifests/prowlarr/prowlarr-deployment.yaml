@@ -13,6 +13,17 @@ spec:
       labels:
         app: prowlarr
     spec:
+      # temporary: prefer to keep off overloaded oug node
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values:
+                      - talos-oug-a0q
       containers:
         - name: prowlarr
           image: lscr.io/linuxserver/prowlarr:2.4.0

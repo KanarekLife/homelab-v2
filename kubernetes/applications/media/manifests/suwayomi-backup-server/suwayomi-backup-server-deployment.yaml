@@ -13,6 +13,17 @@ spec:
       labels:
         app: suwayomi-backup-server
     spec:
+      # temporary: prefer to keep off overloaded oug node
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values:
+                      - talos-oug-a0q
       containers:
         - name: suwayomi-backup-server
           image: ghcr.io/suwayomi/suwayomi-server:v2.2.2217
