@@ -35,7 +35,7 @@ spec:
       # needed.
       containers:
         - name: anki-card-factory
-          image: ghcr.io/kanareklife/anki-card-factory:sha-35ee409
+          image: ghcr.io/kanareklife/anki-card-factory:sha-7bfbc9a
           env:
             - name: TZ
               value: "Europe/Warsaw"
