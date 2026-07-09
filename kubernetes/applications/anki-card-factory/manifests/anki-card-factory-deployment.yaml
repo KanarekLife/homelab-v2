@@ -67,12 +67,16 @@ spec:
             initialDelaySeconds: 15
             periodSeconds: 30
           resources:
+            # Requests stay low: the cluster is at capacity, so we don't reserve
+            # scarce headroom. Limits are raised generously — a CPU *limit* reserves
+            # nothing, it just lets generation burst above half a core instead of
+            # being throttled. Idle draw is ~1m/119Mi; generation is the spiky part.
             requests:
               cpu: 100m
               memory: 128Mi
             limits:
-              cpu: 500m
-              memory: 512Mi
+              cpu: "2"
+              memory: 1Gi
       volumes:
         - name: data
           persistentVolumeClaim:
