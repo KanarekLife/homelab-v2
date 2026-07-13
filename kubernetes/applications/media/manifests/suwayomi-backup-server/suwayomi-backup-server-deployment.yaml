@@ -26,7 +26,7 @@ spec:
                       - talos-oug-a0q
       containers:
         - name: suwayomi-backup-server
-          image: ghcr.io/suwayomi/suwayomi-server:v2.2.2217
+          image: ghcr.io/suwayomi/suwayomi-server:v2.3.2243
           env:
             - name: TZ
               value: "Europe/Warsaw"
